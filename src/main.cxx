@@ -180,8 +180,6 @@ int main()
     return 1;
   }
 
-
-
   // Вывод результатов
   std::ofstream out("output.txt");
   auto satCount = bdd_satcount(solution);
