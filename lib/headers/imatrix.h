@@ -6,7 +6,7 @@
     license or royalty fees, to use, reproduce, prepare derivative
     works, distribute, and display this software and its documentation
     for any purpose, provided that (1) the above copyright notice and
-    the following two paragraphs appear in all copies of the source code
+    the following two paragraphs appear in all copies of the source src
     and (2) redistributions, including without limitation binaries,
     reproduce these notices in the supporting documentation. Substantial
     modifications to this software may be copyrighted by their authors
@@ -28,33 +28,32 @@
 ========================================================================*/
 
 /*************************************************************************
-  $Header: /cvsroot/buddy/buddy/src/bddtree.h,v 1.1.1.1 2004/06/25 13:22:26 haimcohen Exp $
-  FILE:  tree.h
-  DESCR: Trees for BDD variables
+  FILE:  imatrix.h
+  DESCR: Interaction matrix
   AUTH:  Jorn Lind
-  DATE:  (C) march 1998
+  DATE:  (C) february 2000
 *************************************************************************/
 
-#ifndef _TREE_H
-#define _TREE_H
+#ifndef _IMATRIX_H
+#define _IMATRIX_H
 
-typedef struct s_BddTree
+typedef struct _imatrix
 {
-   int first, last;  /* First and last variable in this block */
-   int pos;          /* Sifting position */
-   int *seq;         /* Sequence of first...last in the current order */
-   char fixed;       /* Are the sub-blocks fixed or may they be reordered */
-   int id;           /* A sequential id number given by addblock */
-   struct s_BddTree *next, *prev;
-   struct s_BddTree *nextlevel;
-} BddTree;
+   char **rows;
+   int size;
+} imatrix;
 
-BddTree *bddtree_new(int);
-void     bddtree_del(BddTree *);
-BddTree *bddtree_addrange(BddTree *, int, int, int, int);
-void     bddtree_print(FILE *, BddTree *, int);
 
-#endif /* _TREE_H */
+extern imatrix* imatrixNew(int);
+extern void     imatrixDelete(imatrix*);
+extern void     imatrixFPrint(imatrix*,FILE *);
+extern void     imatrixPrint(imatrix*);
+extern void     imatrixSet(imatrix*,int,int);
+extern void     imatrixClr(imatrix*,int,int);
+extern int      imatrixDepends(imatrix*,int,int);
+
+
+#endif /* _IMATRIX_H */
 
 
 /* EOF */

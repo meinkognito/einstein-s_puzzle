@@ -6,7 +6,7 @@
     license or royalty fees, to use, reproduce, prepare derivative
     works, distribute, and display this software and its documentation
     for any purpose, provided that (1) the above copyright notice and
-    the following two paragraphs appear in all copies of the source code
+    the following two paragraphs appear in all copies of the source src
     and (2) redistributions, including without limitation binaries,
     reproduce these notices in the supporting documentation. Substantial
     modifications to this software may be copyrighted by their authors
@@ -28,7 +28,7 @@
 ========================================================================*/
 
 /*************************************************************************
-  $Header: /cvsroot/buddy/buddy/src/fdd.c,v 1.1.1.1 2004/06/25 13:22:40 haimcohen Exp $
+  $Header: /cvsroot/buddy/buddy/lib/fdd.c,v 1.1.1.1 2004/06/25 13:22:40 haimcohen Exp $
   FILE:  fdd.c
   DESCR: Finite domain extensions to BDD package
   AUTH:  Jorn Lind
@@ -38,8 +38,8 @@
 *************************************************************************/
 #include <stdlib.h>
 #include <string.h>
-#include "kernel.h"
-#include "fdd.h"
+#include "headers/kernel.h"
+#include "headers/fdd.h"
 
 
 static void fdd_printset_rec(FILE *, int, int *);
@@ -117,7 +117,7 @@ DESCR   {* Extends the set of finite domain blocks with the {\tt num}
 	   The BDD variables needed to encode the domain are created for the
 	   purpose and do not interfere with the BDD variables already in
 	   use. *}
-RETURN  {* The index of the first domain or a negative error code. *}
+RETURN  {* The index of the first domain or a negative error src. *}
 ALSO    {* fdd\_ithvar, fdd\_equals, fdd\_overlapdomain *}
 */
 int fdd_extdomain(int *dom, int num)
@@ -268,7 +268,7 @@ PROTO   {* int fdd_domainnum(void) *}
 DESCR   {* Returns the number of finite domain blocks define by calls to
            {\tt bdd\_extdomain}. *}
 RETURN  {* The number of defined finite domain blocks
-           or a negative error code *}
+           or a negative error src *}
 ALSO    {* fdd\_domainsize, fdd\_extdomain *}
 */
 int fdd_domainnum(void)
@@ -287,7 +287,7 @@ SHORT   {* real size of a finite domain block *}
 PROTO   {* int fdd_domainsize(int var) *}
 DESCR   {* Returns the size of the domain for the finite domain
            block {\tt var}. *}
-RETURN  {* The size or a negative error code *}
+RETURN  {* The size or a negative error src *}
 ALSO    {* fdd\_domainnum *}
 */
 int fdd_domainsize(int v)
@@ -308,7 +308,7 @@ SHORT   {* binary size of a finite domain block *}
 PROTO   {* int fdd_varnum(int var) *}
 DESCR   {* Returns the number of BDD variables used for the finite domain
            block {\tt var}. *}
-RETURN  {* The number of variables or a negative error code *}
+RETURN  {* The number of variables or a negative error src *}
 ALSO    {* fdd\_vars *}
 */
 int fdd_varnum(int v)
@@ -362,15 +362,15 @@ int *fdd_vars(int v)
 /*
 NAME    {* fdd\_ithvar *}
 SECTION {* fdd *}
-SHORT   {* the BDD for the i'th FDD set to a specific value *}
+SHORT   {* the BDD for the i'th FDD set to a specific propVal *}
 PROTO   {* BDD fdd_ithvar(int var, int val) *}
-DESCR   {* Returns the BDD that defines the value {\tt val} for the
+DESCR   {* Returns the BDD that defines the propVal {\tt val} for the
            finite domain block {\tt var}. The encoding places the
 	   Least Significant Bit at the top of the BDD tree
 	   (which means they will have the lowest variable index).
 	   The returned BDD will be $V_0 \conj V_1 \conj \ldots
 	   \conj V_N$ where each $V_i$ will be in positive or negative form
-	   depending on the value of {\tt val}. *}
+	   depending on the propVal of {\tt val}. *}
 RETURN  {* The correct BDD or the constant false BDD on error. *}
 ALSO    {* fdd\_ithset *}
 */
@@ -418,12 +418,12 @@ BDD fdd_ithvar(int var, int val)
 /*
 NAME    {* fdd\_scanvar *}
 SECTION {* fdd *}
-SHORT   {* Finds one satisfying value of a FDD variable *}
+SHORT   {* Finds one satisfying propVal of a FDD variable *}
 PROTO   {* int fdd_scanvar(BDD r, int var) *}
 DESCR   {* Finds one satisfying assignment of the FDD variable {\tt var} in the
-           BDD {\tt r} and returns this value. *}
-RETURN  {* The value of a satisfying assignment of {\tt var}. If {\tt r} is
-           the trivially false BDD, then a negative value is returned. *}
+           BDD {\tt r} and returns this propVal. *}
+RETURN  {* The propVal of a satisfying assignment of {\tt var}. If {\tt r} is
+           the trivially false BDD, then a negative propVal is returned. *}
 ALSO    {* fdd\_scanallvar *}
 */
 int fdd_scanvar(BDD r, int var)
@@ -448,10 +448,10 @@ int fdd_scanvar(BDD r, int var)
 /*
 NAME    {* fdd\_scanallvar *}
 SECTION {* fdd *}
-SHORT   {* Finds one satisfying value of all FDD variables *}
+SHORT   {* Finds one satisfying propVal of all FDD variables *}
 PROTO   {* int* fdd_scanallvar(BDD r) *}
 DESCR   {* Finds one satisfying assignment in {\tt r} of all the defined
-           FDD variables. Each value is stored in an array which is
+           FDD variables. Each propVal is stored in an array which is
 	   returned. The size of this array is exactly the number of
 	   FDD variables defined. It is the user's responsibility to
 	   free this array using {\tt free()}. *}
@@ -821,7 +821,7 @@ DESCR   {* Scans the BDD {\tt r} to find all occurences of FDD variables
 	   to point to an array of size {\tt varnum} which will contain
 	   the indices of the found FDD variables. It is the users
 	   responsibility to free {\tt varset} after use. *}
-RETURN  {* Zero on success or a negative error code on error. *}
+RETURN  {* Zero on success or a negative error src on error. *}
 ALSO    {* fdd\_makeset *}
 */
 int fdd_scanset(BDD r, int **varset, int *varnum)
@@ -925,7 +925,7 @@ PROTO   {* int fdd_intaddvarblock(int first, int last, int fixed) *}
 DESCR   {* Works exactly like {\tt bdd\_addvarblock} except that
            {\tt fdd\_intaddvarblock} takes a range of FDD variables
 	   instead of BDD variables. *}
-RETURN  {* Zero on success, otherwise a negative error code. *}
+RETURN  {* Zero on success, otherwise a negative error src. *}
 ALSO    {* bdd\_addvarblock, bdd\_intaddvarblock, bdd\_reorder *}
 */
 int fdd_intaddvarblock(int first, int last, int fixed)
@@ -963,7 +963,7 @@ DESCR   {* Defines each variable in the finite domain block {\tt p1} to
            be paired with the corresponding variable in {\tt p2}. The result
 	   is stored in {\tt pair} which must be allocated using
 	   {\tt bdd\_makepair}. *}
-RETURN  {* Zero on success or a negative error code on error. *}
+RETURN  {* Zero on success or a negative error src on error. *}
 ALSO    {* fdd\_setpairs *}
 */
 int fdd_setpair(bddPair *pair, int p1, int p2)
@@ -997,7 +997,7 @@ DESCR   {* Defines each variable in all the finite domain blocks listed in
 	   in {\tt p2}. The result
 	   is stored in {\tt pair} which must be allocated using
 	   {\tt bdd\_makeset}.*}
-RETURN  {* Zero on success or a negative error code on error. *}
+RETURN  {* Zero on success or a negative error src on error. *}
 ALSO    {* bdd\_setpair *}
 */
 int fdd_setpairs(bddPair *pair, int *p1, int *p2, int size)

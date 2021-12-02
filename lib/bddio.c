@@ -6,7 +6,7 @@
     license or royalty fees, to use, reproduce, prepare derivative
     works, distribute, and display this software and its documentation
     for any purpose, provided that (1) the above copyright notice and
-    the following two paragraphs appear in all copies of the source code
+    the following two paragraphs appear in all copies of the source src
     and (2) redistributions, including without limitation binaries,
     reproduce these notices in the supporting documentation. Substantial
     modifications to this software may be copyrighted by their authors
@@ -28,7 +28,7 @@
 ========================================================================*/
 
 /*************************************************************************
-  $Header: /cvsroot/buddy/buddy/src/bddio.c,v 1.1.1.1 2004/06/25 13:22:14 haimcohen Exp $
+  $Header: /cvsroot/buddy/buddy/lib/bddio.c,v 1.1.1.1 2004/06/25 13:22:14 haimcohen Exp $
   FILE:  bddio.c
   DESCR: File I/O routines for BDD package
   AUTH:  Jorn Lind
@@ -39,7 +39,7 @@
 #include <fcntl.h>
 #include <assert.h>
 #include <sys/stat.h>
-#include "kernel.h"
+#include "headers/kernel.h"
 
 static void bdd_printset_rec(FILE *, int, int *);
 static void bdd_fprintdot_rec(FILE*, BDD);
@@ -376,7 +376,7 @@ DESCR   {* Saves the nodes used by {\tt r} to either a file {\tt ofile}
 	   In the last case the file will be truncated and opened for
 	   writing. *}
 ALSO    {* bdd\_load *}
-RETURN  {* Zero on succes, otherwise an error code from {\tt bdd.h}. *}
+RETURN  {* Zero on succes, otherwise an error src from {\tt bdd.h}. *}
 */
 int bdd_fnsave(char *fname, BDD r)
 {
@@ -470,7 +470,7 @@ DESCR   {* Loads a BDD from a file into the BDD pointed to by {\tt r}.
 	   The nodes {\it must} be saved in a order such that any low or
 	   high node must be defined before it is mentioned. *}
 ALSO    {* bdd\_save *}
-RETURN  {* Zero on succes, otherwise an error code from {\tt bdd.h}. *}
+RETURN  {* Zero on succes, otherwise an error src from {\tt bdd.h}. *}
 */
 int bdd_fnload(char *fname, BDD *root)
 {

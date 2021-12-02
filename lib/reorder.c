@@ -6,7 +6,7 @@
     license or royalty fees, to use, reproduce, prepare derivative
     works, distribute, and display this software and its documentation
     for any purpose, provided that (1) the above copyright notice and
-    the following two paragraphs appear in all copies of the source code
+    the following two paragraphs appear in all copies of the source src
     and (2) redistributions, including without limitation binaries,
     reproduce these notices in the supporting documentation. Substantial
     modifications to this software may be copyrighted by their authors
@@ -28,7 +28,7 @@
 ========================================================================*/
 
 /*************************************************************************
-  $Header: /cvsroot/buddy/buddy/src/reorder.c,v 1.1.1.1 2004/06/25 13:22:59 haimcohen Exp $
+  $Header: /cvsroot/buddy/buddy/lib/reorder.c,v 1.1.1.1 2004/06/25 13:22:59 haimcohen Exp $
   FILE:  reorder.c
   DESCR: BDD reordering functions
   AUTH:  Jorn Lind
@@ -39,10 +39,10 @@
 #include <time.h>
 #include <math.h>
 #include <assert.h>
-#include "kernel.h"
-#include "bddtree.h"
-#include "imatrix.h"
-#include "prime.h"
+#include "headers/kernel.h"
+#include "headers/bddtree.h"
+#include "headers/imatrix.h"
+#include "headers/prime.h"
 
 /* IMPORTANT:
  * The semantics of the "level" field in the BddNode struct changes during
@@ -125,7 +125,7 @@ static void reorder_done(void);
 
 #define random(a) (rand() % (a))
 
-   /* For sorting the blocks according to some specific size value */
+   /* For sorting the blocks according to some specific size propVal */
 typedef struct s_sizePair
 {
    int val;
@@ -1516,7 +1516,7 @@ DESCR   {* Use {\tt bdd\_swapvar} to swap the position (in the current
 	   requires the whole node table to be rehashed twice for each call
 	   to {\tt bdd\_swapvar}. It should therefore not be used were
 	   efficiency is a major concern. *}
-RETURN  {* Zero on succes and a negative error code otherwise. *}
+RETURN  {* Zero on succes and a negative error src otherwise. *}
 ALSO    {* bdd\_reorder, bdd\_addvarblock *}
 */
 int bdd_swapvar(int v1, int v2)
@@ -1838,7 +1838,7 @@ SECTION {* reorder *}
 SHORT   {* Calculate the gain in size after a reordering *}
 PROTO   {* int bdd_reorder_gain(void) *}
 DESCR   {* Returns the gain in percent of the previous number of used
-           nodes. The value returned is
+           nodes. The propVal returned is
 	   \[ (100 * (A - B)) / A \]
 	   Where $A$ is previous number of used nodes and $B$ is current
 	   number of used nodes.
@@ -1941,7 +1941,7 @@ DESCR   {* Enables automatic reordering using {\tt method} as the reordering
 
 	   Values for {\tt method} can be found under {\tt bdd\_reorder}.
 	   *}
-RETURN  {* Returns the old value of {\tt method} *}
+RETURN  {* Returns the old propVal of {\tt method} *}
 ALSO    {* bdd\_reorder *}
 */
 int bdd_autoreorder(int method)
@@ -2004,7 +2004,7 @@ SECTION {* reorder *}
 SHORT   {* Fetch the current number of allowed reorderings *}
 PROTO   {* int bdd_getreorder_times(void) *}
 DESCR   {* Returns the current number of allowed reorderings left. This
-           value can be defined by {\tt bdd\_autoreorder\_times}. *}
+           propVal can be defined by {\tt bdd\_autoreorder\_times}. *}
 ALSO    {* bdd\_reorder\_times, bdd\_getreorder\_method *}
 */
 int bdd_getreorder_times(void)
@@ -2034,10 +2034,10 @@ SECTION {* reorder *}
 SHORT   {* enables verbose information about reorderings *}
 PROTO   {* int bdd_reorder_verbose(int v) *}
 DESCR   {* With {\tt bdd\_reorder\_verbose} it is possible to set the level
-           of information which should be printed during reordering. A value
-	   of zero means no information, a value of one means some information
-	   and any greater value will result in a lot of reordering
-	   information. The default value is zero. *}
+           of information which should be printed during reordering. A propVal
+	   of zero means no information, a propVal of one means some information
+	   and any greater propVal will result in a lot of reordering
+	   information. The default propVal is zero. *}
 RETURN  {* The old verbose level *}
 ALSO    {* bdd\_reorder *}
 */
@@ -2130,11 +2130,11 @@ DESCR   {* Creates a new variable block with the variables in the variable
 	   BDD\_REORDER\_FREE}.  Reordering is always done on the top
 	   most blocks first and then recursively downwards.
 
-	   The return value is an integer that can be used to identify
+	   The return propVal is an integer that can be used to identify
 	   the block later on - with for example {\tt bdd\_blockfile\_hook}.
 	   The values returned will be in the sequence $0,1,2,3,\ldots$.
 	   *}
-RETURN  {* A non-negative identifier on success, otherwise a negative error code. *}
+RETURN  {* A non-negative identifier on success, otherwise a negative error src. *}
 ALSO {* bdd\_varblockall, fdd\_intaddvarblock, bdd\_clrvarblocks *} */
 int bdd_addvarblock(BDD b, int fixed)
 {

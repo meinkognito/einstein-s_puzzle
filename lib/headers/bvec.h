@@ -6,7 +6,7 @@
     license or royalty fees, to use, reproduce, prepare derivative
     works, distribute, and display this software and its documentation
     for any purpose, provided that (1) the above copyright notice and
-    the following two paragraphs appear in all copies of the source code
+    the following two paragraphs appear in all copies of the source src
     and (2) redistributions, including without limitation binaries,
     reproduce these notices in the supporting documentation. Substantial
     modifications to this software may be copyrighted by their authors
@@ -28,7 +28,7 @@
 ========================================================================*/
 
 /*************************************************************************
-  $Header: /cvsroot/buddy/buddy/src/bvec.h,v 1.1.1.1 2004/06/25 13:22:34 haimcohen Exp $
+  $Header: /cvsroot/buddy/buddy/lib/bvec.h,v 1.1.1.1 2004/06/25 13:22:34 haimcohen Exp $
   FILE:  bvec.h
   DESCR: Boolean (BDD) vector handling
   AUTH:  Jorn Lind
@@ -135,7 +135,7 @@ class bvec
    bdd operator[](int i)  const { return roots.bitvec[i]; }
    int bitnum(void) const       { return roots.bitnum; }
    int empty(void) const        { return roots.bitnum==0; }
-   bvec operator=(const bvec &src);
+   bvec operator=(const bvec &lib);
    
 private:
    BVEC roots;

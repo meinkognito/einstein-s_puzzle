@@ -6,7 +6,7 @@
     license or royalty fees, to use, reproduce, prepare derivative
     works, distribute, and display this software and its documentation
     for any purpose, provided that (1) the above copyright notice and
-    the following two paragraphs appear in all copies of the source code
+    the following two paragraphs appear in all copies of the source src
     and (2) redistributions, including without limitation binaries,
     reproduce these notices in the supporting documentation. Substantial
     modifications to this software may be copyrighted by their authors
@@ -28,7 +28,7 @@
 ========================================================================*/
 
 /*************************************************************************
-  $Header: /cvsroot/buddy/buddy/src/bddop.c,v 1.1.1.1 2004/06/25 13:22:22 haimcohen Exp $
+  $Header: /cvsroot/buddy/buddy/lib/bddop.c,v 1.1.1.1 2004/06/25 13:22:22 haimcohen Exp $
   FILE:  bddop.c
   DESCR: BDD operators
   AUTH:  Jorn Lind
@@ -40,22 +40,22 @@
 #include <time.h>
 #include <assert.h>
 
-#include "kernel.h"
-#include "cache.h"
+#include "headers/kernel.h"
+#include "headers/cache.h"
 
-   /* Hash value modifiers to distinguish between entries in misccache */
+   /* Hash propVal modifiers to distinguish between entries in misccache */
 #define CACHEID_CONSTRAIN   0x0
 #define CACHEID_RESTRICT    0x1
 #define CACHEID_SATCOU      0x2
 #define CACHEID_SATCOULN    0x3
 #define CACHEID_PATHCOU     0x4
 
-   /* Hash value modifiers for replace/compose */
+   /* Hash propVal modifiers for replace/compose */
 #define CACHEID_REPLACE      0x0
 #define CACHEID_COMPOSE      0x1
 #define CACHEID_VECCOMPOSE   0x2
 
-   /* Hash value modifiers for quantification */
+   /* Hash propVal modifiers for quantification */
 #define CACHEID_EXIST        0x0
 #define CACHEID_FORALL       0x1
 #define CACHEID_UNIQUE       0x2
@@ -97,7 +97,7 @@ static int replacelast;             /* Current last var. level to replace */
 static int composelevel;            /* Current variable used for compose */
 static int miscid;                  /* Current cache id for other results */
 static int *varprofile;             /* Current variable profile */
-static int supportID;               /* Current ID (true value) for support */
+static int supportID;               /* Current ID (true propVal) for support */
 static int supportMin;              /* Min. used level in support calc. */
 static int supportMax;              /* Max. used level in support calc. */
 static int* supportSet;             /* The found support set */
@@ -269,8 +269,8 @@ PROTO   {* int bdd_setcacheratio(int r) *}
 DESCR   {* The ratio between the number of nodes in the nodetable
            and the number of entries in the operator cachetables is called
 	   the cache ratio. So a cache ratio of say, four, allocates one cache
-	   entry for each four unique node entries. This value can be set with
-	   {\tt bdd\_setcacheratio} to any positive value. When this is done
+	   entry for each four unique node entries. This propVal can be set with
+	   {\tt bdd\_setcacheratio} to any positive propVal. When this is done
 	   the caches are resized instantly to fit the new ratio.
 	   The default is a fixed cache size determined at
 	   initialization time. *}
@@ -311,11 +311,11 @@ NAME    {* bdd\_buildcube *}
 EXTRA   {* bdd\_ibuildcube *}
 SECTION {* operator *}
 SHORT   {* build a cube from an array of variables *}
-PROTO   {* BDD bdd_buildcube(int value, int width, BDD *var)
-BDD bdd_ibuildcube(int value, int width, int *var)*}
+PROTO   {* BDD bdd_buildcube(int propVal, int width, BDD *var)
+BDD bdd_ibuildcube(int propVal, int width, int *var)*}
 DESCR   {* This function builds a cube from the variables in {\tt
            var}. It does so by interpreting the {\tt width} low order
-	   bits of {\tt value} as a bit mask--a set bit indicates that the
+	   bits of {\tt propVal} as a bit mask--a set bit indicates that the
 	   variable should be added in it's positive form, and a cleared
 	   bit the opposite. The most significant bits are encoded with
 	   the first variables in {\tt var}. Consider as an example

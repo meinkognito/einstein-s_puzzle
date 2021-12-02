@@ -6,7 +6,7 @@
     license or royalty fees, to use, reproduce, prepare derivative
     works, distribute, and display this software and its documentation
     for any purpose, provided that (1) the above copyright notice and
-    the following two paragraphs appear in all copies of the source code
+    the following two paragraphs appear in all copies of the source src
     and (2) redistributions, including without limitation binaries,
     reproduce these notices in the supporting documentation. Substantial
     modifications to this software may be copyrighted by their authors
@@ -28,7 +28,7 @@
 ========================================================================*/
 
 /*************************************************************************
-  $Header: /cvsroot/buddy/buddy/src/bdd.h,v 1.1.1.1 2004/06/25 13:22:09 haimcohen Exp $
+  $Header: /cvsroot/buddy/buddy/lib/bdd.h,v 1.1.1.1 2004/06/25 13:22:09 haimcohen Exp $
   FILE:  bdd.h
   DESCR: C,C++ User interface for the BDD package
   AUTH:  Jorn Lind
@@ -386,7 +386,7 @@ extern const BDD bddtrue;
 
 #define BDD_MEMORY (-1)   /* Out of memory */
 #define BDD_VAR (-2)      /* Unknown variable */
-#define BDD_RANGE (-3)    /* Variable value out of range (not in domain) */
+#define BDD_RANGE (-3)    /* Variable propVal out of range (not in domain) */
 #define BDD_DEREF (-4)    /* Removing external reference to unknown node */
 #define BDD_RUNNING (-5)  /* Called bdd_init() twice whithout bdd_done() */
 #define BDD_FILE (-6)     /* Some file operation failed */

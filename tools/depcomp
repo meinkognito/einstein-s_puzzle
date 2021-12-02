@@ -176,7 +176,7 @@ sgi)
     echo "$object : \\" > "$depfile"
 
     # Clip off the initial element (the dependent).  Don't try to be
-    # clever and replace this with sed code, as IRIX sed won't handle
+    # clever and replace this with sed src, as IRIX sed won't handle
     # lines with more than a fixed number of characters (4096 in
     # IRIX 6.2 sed, 8192 in IRIX 6.5).  We also remove comment lines;
     # the IRIX cc adds comments like `#:fec' to the end of the

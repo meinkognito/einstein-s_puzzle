@@ -6,7 +6,7 @@
     license or royalty fees, to use, reproduce, prepare derivative
     works, distribute, and display this software and its documentation
     for any purpose, provided that (1) the above copyright notice and
-    the following two paragraphs appear in all copies of the source code
+    the following two paragraphs appear in all copies of the source src
     and (2) redistributions, including without limitation binaries,
     reproduce these notices in the supporting documentation. Substantial
     modifications to this software may be copyrighted by their authors
@@ -28,15 +28,15 @@
 ========================================================================*/
 
 /*************************************************************************
-  $Header: /cvsroot/buddy/buddy/src/bvec.c,v 1.1.1.1 2004/06/25 13:22:34 haimcohen Exp $
+  $Header: /cvsroot/buddy/buddy/lib/bvec.c,v 1.1.1.1 2004/06/25 13:22:34 haimcohen Exp $
   FILE:  bvec.c
   DESCR: Boolean vector arithmetics using BDDs
   AUTH:  Jorn Lind
   DATE:  (C) may 1999
 *************************************************************************/
 #include <stdlib.h>
-#include "kernel.h"
-#include "bvec.h"
+#include "headers/kernel.h"
+#include "headers/bvec.h"
 
 #define DEFAULT(v) { v.bitnum=0; v.bitvec=NULL; }
 
@@ -86,8 +86,8 @@ int bvec_val2bitnum(int val)
 NAME    {* bvec\_copy *}
 SECTION {* bvec *}
 SHORT   {* create a copy of a bvec *}
-PROTO   {* bvec bvec_copy(bvec src) *}
-DESCR   {* Returns a copy of {\tt src}. The result is reference counted. *}
+PROTO   {* bvec bvec_copy(bvec lib) *}
+DESCR   {* Returns a copy of {\tt lib}. The result is reference counted. *}
 ALSO    {* bvec\_con *}
 */
 bvec bvec_copy(bvec src)
@@ -146,10 +146,10 @@ bvec bvec_false(int bitnum)
 /*
 NAME    {* bvec\_con *}
 SECTION {* bvec *}
-SHORT   {* Build a boolean vector representing an integer value *}
+SHORT   {* Build a boolean vector representing an integer propVal *}
 PROTO   {* bvec bvec_con(int bitnum, int val) *}
-DESCR   {* Builds a boolean vector that represents the value {\tt val}
-           using {\tt bitnum} bits. The value will be represented with the
+DESCR   {* Builds a boolean vector that represents the propVal {\tt val}
+           using {\tt bitnum} bits. The propVal will be represented with the
 	   LSB at the position 0 and the MSB at position {\tt bitnum}-1.*}
 RETURN  {* The boolean vector (which is already reference counted) *}
 ALSO    {* bvec\_true, bvec\_false, bvec\_var *}
@@ -306,12 +306,12 @@ int bvec_isconst(bvec e)
 /*
 NAME    {* bvec\_val *}
 SECTION {* bvec *}
-SHORT   {* calculate the integer value represented by a boolean vector *}
+SHORT   {* calculate the integer propVal represented by a boolean vector *}
 PROTO   {* int bvec_val(bvec v) *}
-DESCR   {* Calculates the value represented by the bits in {\tt v} assuming
+DESCR   {* Calculates the propVal represented by the bits in {\tt v} assuming
            that the vector {\tt v} consists of only constant true
            or false BDDs. The LSB is assumed to be at position zero. *}
-RETURN  {* The integer value represented by {\tt v}. *}
+RETURN  {* The integer propVal represented by {\tt v}. *}
 ALSO    {* bvec\_isconst, bvec\_con *}
 */
 int bvec_val(bvec e)
@@ -399,7 +399,7 @@ SECTION {* bvec *}
 SHORT   {* map a function onto a boolean vector *}
 PROTO   {* bvec bvec_map1(bvec a, bdd (*fun)(bdd)) *}
 DESCR   {* Maps the function {\tt fun} onto all the elements in {\tt a}. The
-           value returned from {\tt fun} is stored in a new vector which
+           propVal returned from {\tt fun} is stored in a new vector which
 	   is then returned. An example of a mapping function is
 	   {\tt bdd\_not} which can be used like this\\
 
@@ -428,7 +428,7 @@ SECTION {* bvec *}
 SHORT   {* map a function onto a boolean vector *}
 PROTO   {* bvec bvec_map2(bvec a, bvec b, bdd (*fun)(bdd,bdd)) *}
 DESCR   {* Maps the function {\tt fun} onto all the elements in {\tt a} and
-           {\tt b}. The value returned from {\tt fun} is stored in a new
+           {\tt b}. The propVal returned from {\tt fun} is stored in a new
 	   vector which is then returned. An example of a mapping function
 	   is {\tt bdd\_and} which can be used like this\\
 
@@ -465,7 +465,7 @@ SECTION {* bvec *}
 SHORT   {* map a function onto a boolean vector *}
 PROTO   {* bvec bvec_map3(bvec a, bvec b, bvec c, bdd (*fun)(bdd,bdd,bdd)) *}
 DESCR   {* Maps the function {\tt fun} onto all the elements in {\tt a},
-           {\tt b} and {\tt c}. The value returned from {\tt fun} is stored
+           {\tt b} and {\tt c}. The propVal returned from {\tt fun} is stored
 	   in a new vector which is then returned. An example of a mapping
 	   function is {\tt bdd\_ite} which can be used like this\\
 
@@ -784,7 +784,7 @@ DESCR   {* Builds a new boolean vector representing the integer division
 	   {\tt rem}. Both vectors should be initialized as the function
 	   will try to release the nodes used by them. If an error occurs then
 	   the nodes will {\em not} be freed. *}
-RETURN  {* Zero on success or a negative error code on error. *}
+RETURN  {* Zero on success or a negative error src on error. *}
 ALSO    {* bvec\_div, bvec\_mul, bvec\_add, bvec\_shl *}
 */
 int bvec_divfixed(bvec e, int c, bvec *res, bvec *rem)
@@ -837,7 +837,7 @@ DESCR   {* Builds a new boolean vector representing the integer division
 	   {\tt rem}. Both vectors should be initialized as the function
 	   will try to release the nodes used by them. If an error occurs then
 	   the nodes will {\em not} be freed.*}
-RETURN  {* Zero on success or a negative error code on error. *}
+RETURN  {* Zero on success or a negative error src on error. *}
 ALSO    {* bvec\_mul, bvec\_divfixed, bvec\_add, bvec\_shl *}
 */
 int bvec_div(bvec left, bvec right, bvec *result, bvec *remainder)
@@ -990,7 +990,7 @@ PROTO   {* bvec bvec_shl(bvec l, bvec r, BDD c) *}
 DESCR   {* Builds a boolean vector that represents {\tt l} shifted {\tt r}
            times to the left. The new empty elements will be set to {\tt c}.
 	   The shift operation is fully symbolic and the number of bits
-	   shifted depends on the current value encoded by {\tt r}. *}
+	   shifted depends on the current propVal encoded by {\tt r}. *}
 RETURN  {* The result of the operation (which is already reference counted) *}
 ALSO    {* bvec\_add, bvec\_mul, bvec\_shlfixed, bvec\_shr *}
 */
@@ -1102,7 +1102,7 @@ PROTO   {* bvec bvec_shr(bvec l, bvec r, BDD c) *}
 DESCR   {* Builds a boolean vector that represents {\tt l} shifted {\tt r}
            times to the right. The new empty elements will be set to {\tt c}.
 	   The shift operation is fully symbolic and the number of bits
-	   shifted depends on the current value encoded by {\tt r}. *}
+	   shifted depends on the current propVal encoded by {\tt r}. *}
 RETURN  {* The result of the operation (which is already reference counted) *}
 ALSO    {* bvec\_add, bvec\_mul, bvec\_shl, bvec\_shrfixed *}
 */
@@ -1169,7 +1169,7 @@ BVEC bvec_shr(BVEC l, BVEC r, BDD c)
 /*
 NAME    {* bvec\_lth *}
 SECTION {* bvec *}
-SHORT   {* calculates the truth value of $x < y$ *}
+SHORT   {* calculates the truth propVal of $x < y$ *}
 PROTO   {* bdd bvec_lth(bvec l, bvec r) *}
 DESCR   {* Returns the BDD representing {\tt l < r}
            ({\em not} reference counted). Both vectors must have the
@@ -1213,7 +1213,7 @@ bdd bvec_lth(bvec l, bvec r)
 /*
 NAME    {* bvec\_lte *}
 SECTION {* bvec *}
-SHORT   {* calculates the truth value of $x \leq y$ *}
+SHORT   {* calculates the truth propVal of $x \leq y$ *}
 PROTO   {* bdd bvec_lte(bvec l, bvec r) *}
 DESCR   {* Returns the BDD representing {\tt l}$\leq${\tt r}
            ({\em not} reference counted). Both vectors must have the
@@ -1257,7 +1257,7 @@ bdd bvec_lte(bvec l, bvec r)
 /*
 NAME    {* bvec\_gth *}
 SECTION {* bvec *}
-SHORT   {* calculates the truth value of $x > y$ *}
+SHORT   {* calculates the truth propVal of $x > y$ *}
 PROTO   {* bdd bvec_gth(bvec l, bvec r) *}
 DESCR   {* Returns the BDD representing {\tt l > r}
            ({\em not} reference counted). Both vectors must have the
@@ -1276,7 +1276,7 @@ bdd bvec_gth(bvec l, bvec r)
 /*
 NAME    {* bvec\_gte *}
 SECTION {* bvec *}
-SHORT   {* calculates the truth value of $x \geq y$ *}
+SHORT   {* calculates the truth propVal of $x \geq y$ *}
 PROTO   {* bdd bvec_gte(bvec l, bvec r) *}
 DESCR   {* Returns the BDD representing {\tt l}$\geq${\tt r}
            ({\em not} reference counted). Both vectors must have the
@@ -1295,7 +1295,7 @@ bdd bvec_gte(bvec l, bvec r)
 /*
 NAME    {* bvec\_equ *}
 SECTION {* bvec *}
-SHORT   {* calculates the truth value of $x = y$ *}
+SHORT   {* calculates the truth propVal of $x = y$ *}
 PROTO   {* bdd bvec_equ(bvec l, bvec r) *}
 DESCR   {* Returns the BDD representing {\tt l = r}
            ({\em not} reference counted). Both vectors must have the
@@ -1333,7 +1333,7 @@ bdd bvec_equ(bvec l, bvec r)
 /*
 NAME    {* bvec\_neq *}
 SECTION {* bvec *}
-SHORT   {* calculates the truth value of $x \neq y$ *}
+SHORT   {* calculates the truth propVal of $x \neq y$ *}
 PROTO   {* bdd bvec_neq(bvec l, bvec r) *}
 DESCR   {* Returns the BDD representing {\tt l}$\neq${\tt r}
            ({\em not} reference counted). Both vectors must have the

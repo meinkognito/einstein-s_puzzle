@@ -6,7 +6,7 @@
     license or royalty fees, to use, reproduce, prepare derivative
     works, distribute, and display this software and its documentation
     for any purpose, provided that (1) the above copyright notice and
-    the following two paragraphs appear in all copies of the source code
+    the following two paragraphs appear in all copies of the source src
     and (2) redistributions, including without limitation binaries,
     reproduce these notices in the supporting documentation. Substantial
     modifications to this software may be copyrighted by their authors
@@ -28,7 +28,7 @@
 ========================================================================*/
 
 /*************************************************************************
-  $Header: /cvsroot/buddy/buddy/src/kernel.c,v 1.2 2004/07/13 21:04:36 haimcohen Exp $
+  $Header: /cvsroot/buddy/buddy/lib/kernel.c,v 1.2 2004/07/13 21:04:36 haimcohen Exp $
   FILE:  kernel.c
   DESCR: implements the bdd kernel functions.
   AUTH:  Jorn Lind
@@ -45,9 +45,9 @@
 #include <time.h>
 #include <assert.h>
 
-#include "kernel.h"
-#include "cache.h"
-#include "prime.h"
+#include "headers/kernel.h"
+#include "headers/cache.h"
+#include "headers/prime.h"
 
 /*************************************************************************
   Various definitions and global variables
@@ -60,7 +60,7 @@ NAME    {* bddtrue *}
 SECTION {* kernel *}
 SHORT   {* the constant true bdd *}
 PROTO   {* extern const BDD bddtrue; *}
-DESCR   {* This bdd holds the constant true value *}
+DESCR   {* This bdd holds the constant true propVal *}
 ALSO    {* bddfalse, bdd\_true, bdd\_false *}
 */
 const BDD bddtrue=1;                     /* The constant true bdd */
@@ -70,7 +70,7 @@ NAME    {* bddfalse*}
 SECTION {* kernel *}
 SHORT   {* the constant false bdd *}
 PROTO   {* extern const BDD bddfalse; *}
-DESCR   {* This bdd holds the constant false value *}
+DESCR   {* This bdd holds the constant false propVal *}
 ALSO    {* bddtrue, bdd\_true, bdd\_false *}
 */
 const BDD bddfalse=0;                    /* The constant false bdd */
@@ -168,7 +168,7 @@ DESCR  {* This function initiates the bdd package and {\em must} be called
 	  after a garbage collection. But it does have some impact on the
 	  efficency of the operations. *}
 RETURN {* If no errors occur then 0 is returned, otherwise
-          a negative error code. *}
+          a negative error src. *}
 ALSO   {* bdd\_done, bdd\_resize\_hook *}
 */
 int bdd_init(int initnodesize, int cs)
@@ -288,7 +288,7 @@ DESCR   {* This function is used to define the number of variables used in
            the bdd package. It may be called more than one time, but only
 	   to increase the number of variables. The argument
 	   {\tt num} is the number of variables to use. *}
-RETURN  {* Zero on succes, otherwise a negative error code. *}
+RETURN  {* Zero on succes, otherwise a negative error src. *}
 ALSO    {* bdd\_ithvar, bdd\_varnum, bdd\_extvarnum *}
 */
 int bdd_setvarnum(int num)
@@ -385,7 +385,7 @@ SHORT   {* add extra BDD variables *}
 PROTO   {* int bdd_extvarnum(int num) *}
 DESCR   {* Extends the current number of allocated BDD variables with
            {\tt num} extra variables. *}
-RETURN  {* The old number of allocated variables or a negative error code. *}
+RETURN  {* The old number of allocated variables or a negative error src. *}
 ALSO    {* bdd\_setvarnum, bdd\_ithvar, bdd\_nithvar *}
 */
 int bdd_extvarnum(int num)
@@ -408,7 +408,7 @@ PROTO {* bddinthandler bdd_error_hook(bddinthandler handler) *}
 DESCR {* Whenever an error occurs in the bdd package a test is done to
         see if an error handler is supplied by the user and if such exists
 	then it will be called
-	with an error code in the variable {\tt errcode}. The handler may
+	with an error src in the variable {\tt errcode}. The handler may
 	then print any usefull information and return or exit afterwards.
 
 	This function sets the handler to be {\tt handler}. If a {\tt NULL}
@@ -535,7 +535,7 @@ DESCR   {* The node table is expanded by doubling the size of the table
            when no more free nodes can be found, but a maximum for the
 	   number of new nodes added can be set with {\tt bdd\_maxincrease}
 	   to {\tt size} nodes. The default is 50000 nodes (1 Mb). *}
-RETURN  {* The old threshold on succes, otherwise a negative error code. *}
+RETURN  {* The old threshold on succes, otherwise a negative error src. *}
 ALSO    {* bdd\_setmaxnodenum, bdd\_setminfreenodes *}
 */
 int bdd_setmaxincrease(int size)
@@ -560,10 +560,10 @@ DESCR {* This function sets the maximal number of bdd nodes the package may
 	 may be allocated for the nodetable. Any attempt to allocate more
 	 nodes results in the constant false being returned and the error
 	 handler being called until some nodes are deallocated.
-	 A value of 0 is interpreted as an unlimited amount.
+	 A propVal of 0 is interpreted as an unlimited amount.
 	 It is {\em not} possible to specify
 	 fewer nodes than there has already been allocated. *}
-RETURN {* The old threshold on succes, otherwise a negative error code. *}
+RETURN {* The old threshold on succes, otherwise a negative error src. *}
 ALSO   {* bdd\_setmaxincrease, bdd\_setminfreenodes *}
 */
 int bdd_setmaxnodenum(int size)
@@ -592,9 +592,9 @@ DESCR   {* Whenever a garbage collection is executed the number of free
 	   {\tt X} is of course $0\ldots 100$ and has some influence
 	   on how fast the package is. A low number means harder attempts
 	   to avoid resizing and saves space, and a high number reduces
-	   the time used in garbage collections. The default value is
+	   the time used in garbage collections. The default propVal is
 	   20. *}
-RETURN  {* The old threshold on succes, otherwise a negative error code. *}
+RETURN  {* The old threshold on succes, otherwise a negative error src. *}
 ALSO    {* bdd\_setmaxnodenum, bdd\_setmaxincrease *}
 */
 int bdd_setminfreenodes(int mf)
@@ -784,9 +784,9 @@ void bdd_printstat(void)
 /*
 NAME    {* bdd\_errstring *}
 SECTION {* kernel *}
-SHORT   {* converts an error code to a string*}
+SHORT   {* converts an error src to a string*}
 PROTO   {* const char *bdd_errstring(int errorcode) *}
-DESCR   {* Converts a negative error code {\tt errorcode} to a descriptive
+DESCR   {* Converts a negative error src {\tt errorcode} to a descriptive
            string that can be used for error handling. *}
 RETURN  {* An error description string if {\tt e} is known, otherwise {\tt NULL}. *}
 ALSO    {* bdd\_err\_hook *}
@@ -1427,7 +1427,7 @@ DESCR   {* Scans a variable set {\tt r} and copies the stored variables into
 	   array is deallocated by a call to {\tt free(v)}. The numbers
 	   returned are guaranteed to be in ascending order. *}
 ALSO    {* bdd\_makeset *}
-RETURN  {* Zero on success, otherwise a negative error code. *}
+RETURN  {* Zero on success, otherwise a negative error src. *}
 */
 int bdd_scanset(BDD r, int **varset, int *varnum)
 {

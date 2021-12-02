@@ -6,7 +6,7 @@
     license or royalty fees, to use, reproduce, prepare derivative
     works, distribute, and display this software and its documentation
     for any purpose, provided that (1) the above copyright notice and
-    the following two paragraphs appear in all copies of the source code
+    the following two paragraphs appear in all copies of the source src
     and (2) redistributions, including without limitation binaries,
     reproduce these notices in the supporting documentation. Substantial
     modifications to this software may be copyrighted by their authors
@@ -28,7 +28,7 @@
 ========================================================================*/
 
 /*************************************************************************
-  $Header: /cvsroot/buddy/buddy/src/pairs.c,v 1.1.1.1 2004/06/25 13:22:50 haimcohen Exp $
+  $Header: /cvsroot/buddy/buddy/lib/pairs.c,v 1.1.1.1 2004/06/25 13:22:50 haimcohen Exp $
   FILE:  pairs.c
   DESCR: Pair management for BDD package.
   AUTH:  Jorn Lind
@@ -36,7 +36,7 @@
 *************************************************************************/
 #include <stdlib.h>
 #include <limits.h>
-#include "kernel.h"
+#include "headers/kernel.h"
 
 /*======================================================================*/
 
@@ -190,7 +190,7 @@ DESCR   {* Adds the pair {\tt (oldvar,newvar)} to the table of pairs
 	   The possibility to substitute with any BDD as {\tt newvar} is
 	   utilized in bdd\_compose, whereas only the topmost variable
 	   in the BDD is used in bdd\_replace. *}
-RETURN  {* Zero on success, otherwise a negative error code. *}
+RETURN  {* Zero on success, otherwise a negative error src. *}
 ALSO    {* bdd\_newpair, bdd\_setpairs, bdd\_resetpair, bdd\_replace, bdd\_compose *}
 */
 int bdd_setpair(bddPair *pair, int oldvar, int newvar)
@@ -246,7 +246,7 @@ PROTO   {* int bdd_setpairs(bddPair *pair, int *oldvar, int *newvar, int size)
 int bdd_setbddpairs(bddPair *pair, int *oldvar, BDD *newvar, int size) *}
 DESCR   {* As for {\tt bdd\_setpair} but with {\tt oldvar} and {\tt newvar}
            being arrays of variables (BDDs) of size {\tt size}. *}
-RETURN  {* Zero on success, otherwise a negative error code. *}
+RETURN  {* Zero on success, otherwise a negative error src. *}
 ALSO    {* bdd\_newpair, bdd\_setpair, bdd\_replace, bdd\_compose *}
 */
 int bdd_setpairs(bddPair *pair, int *oldvar, int *newvar, int size)

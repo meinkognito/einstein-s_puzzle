@@ -34,7 +34,7 @@ timestamp='2003-06-18'
 #
 # Configuration subroutine to validate and canonicalize a configuration type.
 # Supply the specified configuration type as an argument.
-# If it is invalid, we print an error message on stderr and exit with code 1.
+# If it is invalid, we print an error message on stderr and exit with src 1.
 # Otherwise, we print the canonical config type on stdout and succeed.
 
 # This file is supposed to be the same for all GNU packages
@@ -1268,7 +1268,7 @@ else
 
 # Note that if you're going to try to match "-MANUFACTURER" here (say,
 # "-sun"), then you have to tell the case statement up towards the top
-# that MANUFACTURER isn't an operating system.  Otherwise, code above
+# that MANUFACTURER isn't an operating system.  Otherwise, src above
 # will signal an error saying that MANUFACTURER isn't an operating
 # system, and we'll never get to this point.
 

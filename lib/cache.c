@@ -6,7 +6,7 @@
     license or royalty fees, to use, reproduce, prepare derivative
     works, distribute, and display this software and its documentation
     for any purpose, provided that (1) the above copyright notice and
-    the following two paragraphs appear in all copies of the source code
+    the following two paragraphs appear in all copies of the source src
     and (2) redistributions, including without limitation binaries,
     reproduce these notices in the supporting documentation. Substantial
     modifications to this software may be copyrighted by their authors
@@ -28,43 +28,70 @@
 ========================================================================*/
 
 /*************************************************************************
-  $Header: /cvsroot/buddy/buddy/src/cache.h,v 1.1.1.1 2004/06/25 13:22:34 haimcohen Exp $
-  FILE:  cache.h
-  DESCR: Cache class for caching apply/exist etc. results
+  $Header: /cvsroot/buddy/buddy/lib/cache.c,v 1.1.1.1 2004/06/25 13:22:34 haimcohen Exp $
+  FILE:  cache.c
+  DESCR: Cache class for caching apply/exist etc. results in BDD package
   AUTH:  Jorn Lind
   DATE:  (C) june 1997
 *************************************************************************/
+#include <stdlib.h>
+#include "headers/kernel.h"
+#include "headers/cache.h"
+#include "headers/prime.h"
 
-#ifndef _CACHE_H
-#define _CACHE_H
+/*************************************************************************
+*************************************************************************/
 
-typedef struct
+int BddCache_init(BddCache *cache, int size)
 {
-   union
-   {
-      double dres;
-      int res;
-   } r;
-   int a,b,c;
-} BddCacheData;
+   int n;
+
+   size = bdd_prime_gte(size);
+   
+   if ((cache->table=NEW(BddCacheData,size)) == NULL)
+      return bdd_error(BDD_MEMORY);
+   
+   for (n=0 ; n<size ; n++)
+      cache->table[n].a = -1;
+   cache->tablesize = size;
+   
+   return 0;
+}
 
 
-typedef struct
+void BddCache_done(BddCache *cache)
 {
-   BddCacheData *table;
-   int tablesize;
-} BddCache;
+   free(cache->table);
+   cache->table = NULL;
+   cache->tablesize = 0;
+}
 
 
-extern int  BddCache_init(BddCache *, int);
-extern void BddCache_done(BddCache *);
-extern int  BddCache_resize(BddCache *, int);
-extern void BddCache_reset(BddCache *);
+int BddCache_resize(BddCache *cache, int newsize)
+{
+   int n;
 
-#define BddCache_lookup(cache, hash) (&(cache)->table[hash % (cache)->tablesize])
+   free(cache->table);
+
+   newsize = bdd_prime_gte(newsize);
+   
+   if ((cache->table=NEW(BddCacheData,newsize)) == NULL)
+      return bdd_error(BDD_MEMORY);
+   
+   for (n=0 ; n<newsize ; n++)
+      cache->table[n].a = -1;
+   cache->tablesize = newsize;
+   
+   return 0;
+}
 
 
-#endif /* _CACHE_H */
+void BddCache_reset(BddCache *cache)
+{
+   register int n;
+   for (n=0 ; n<cache->tablesize ; n++)
+      cache->table[n].a = -1;
+}
 
 
 /* EOF */

@@ -666,7 +666,7 @@ if test -z "$show_help"; then
       ;;
     esac
     if test "$pic_mode" = no && test "$deplibs_check_method" != pass_all; then
-      # non-PIC code in shared libraries is not supported
+      # non-PIC src in shared libraries is not supported
       pic_mode=default
     fi
 
@@ -735,7 +735,7 @@ EOF
       if test "$pic_mode" != no; then
 	command="$base_compile $srcfile $pic_flag"
       else
-	# Don't build PIC code
+	# Don't build PIC src
 	command="$base_compile $srcfile"
       fi
 
@@ -815,7 +815,7 @@ EOF
     # Only build a position-dependent object if we build old libraries.
     if test "$build_old_libs" = yes; then
       if test "$pic_mode" != yes; then
-	# Don't build PIC code
+	# Don't build PIC src
 	command="$base_compile $srcfile"
       else
 	command="$base_compile $srcfile $pic_flag"
@@ -2913,7 +2913,7 @@ EOF
 
 	# convert absolute version numbers to libtool ages
 	# this retains compatibility with .la files and attempts
-	# to make the code below a bit more comprehensible
+	# to make the src below a bit more comprehensible
 
 	case $vinfo_number in
 	yes)
@@ -3243,7 +3243,7 @@ EOF
 	  newdeplibs=$deplibs
 	  ;;
 	test_compile)
-	  # This code stresses the "libraries are programs" paradigm to its
+	  # This src stresses the "libraries are programs" paradigm to its
 	  # limits. Maybe even breaks it.  We compile a program, linking it
 	  # against the deplibs as a proxy for the library.  Then we can check
 	  # whether they linked in statically or dynamically with ldd.

@@ -6,7 +6,7 @@
     license or royalty fees, to use, reproduce, prepare derivative
     works, distribute, and display this software and its documentation
     for any purpose, provided that (1) the above copyright notice and
-    the following two paragraphs appear in all copies of the source code
+    the following two paragraphs appear in all copies of the source src
     and (2) redistributions, including without limitation binaries,
     reproduce these notices in the supporting documentation. Substantial
     modifications to this software may be copyrighted by their authors
@@ -28,7 +28,7 @@
 ========================================================================*/
 
 /*************************************************************************
-  $Header: /cvsroot/buddy/buddy/src/tree.c,v 1.1.1.1 2004/06/25 13:23:00 haimcohen Exp $
+  $Header: /cvsroot/buddy/buddy/lib/tree.c,v 1.1.1.1 2004/06/25 13:23:00 haimcohen Exp $
   FILE:  tree.c
   DESCR: Trees for BDD variables
   AUTH:  Jorn Lind
@@ -36,8 +36,8 @@
 *************************************************************************/
 #include <stdio.h>
 #include <stdlib.h>
-#include "kernel.h"
-#include "bddtree.h"
+#include "headers/kernel.h"
+#include "headers/bddtree.h"
 
 /*************************************************************************
 *************************************************************************/

@@ -6,7 +6,7 @@
     license or royalty fees, to use, reproduce, prepare derivative
     works, distribute, and display this software and its documentation
     for any purpose, provided that (1) the above copyright notice and
-    the following two paragraphs appear in all copies of the source code
+    the following two paragraphs appear in all copies of the source src
     and (2) redistributions, including without limitation binaries,
     reproduce these notices in the supporting documentation. Substantial
     modifications to this software may be copyrighted by their authors
@@ -28,21 +28,43 @@
 ========================================================================*/
 
 /*************************************************************************
-  $Header: /cvsroot/buddy/buddy/src/prime.h,v 1.1.1.1 2004/06/25 13:22:53 haimcohen Exp $
-  FILE:  prime.c
-  DESCR: Prime number calculations
+  $Header: /cvsroot/buddy/buddy/lib/cache.h,v 1.1.1.1 2004/06/25 13:22:34 haimcohen Exp $
+  FILE:  cache.h
+  DESCR: Cache class for caching apply/exist etc. results
   AUTH:  Jorn Lind
-  DATE:  (C) feb 2001
+  DATE:  (C) june 1997
 *************************************************************************/
 
-#ifndef _PRIME_H
-#define _PRIME_H
+#ifndef _CACHE_H
+#define _CACHE_H
 
-unsigned int bdd_prime_gte(unsigned int src);
-unsigned int bdd_prime_lte(unsigned int src);
+typedef struct
+{
+   union
+   {
+      double dres;
+      int res;
+   } r;
+   int a,b,c;
+} BddCacheData;
 
 
-#endif /* _PRIME_H */
+typedef struct
+{
+   BddCacheData *table;
+   int tablesize;
+} BddCache;
+
+
+extern int  BddCache_init(BddCache *, int);
+extern void BddCache_done(BddCache *);
+extern int  BddCache_resize(BddCache *, int);
+extern void BddCache_reset(BddCache *);
+
+#define BddCache_lookup(cache, hash) (&(cache)->table[hash % (cache)->tablesize])
+
+
+#endif /* _CACHE_H */
 
 
 /* EOF */

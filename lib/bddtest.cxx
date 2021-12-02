@@ -6,7 +6,7 @@
     license or royalty fees, to use, reproduce, prepare derivative
     works, distribute, and display this software and its documentation
     for any purpose, provided that (1) the above copyright notice and
-    the following two paragraphs appear in all copies of the source code
+    the following two paragraphs appear in all copies of the source src
     and (2) redistributions, including without limitation binaries,
     reproduce these notices in the supporting documentation. Substantial
     modifications to this software may be copyrighted by their authors
@@ -28,8 +28,8 @@
 ========================================================================*/
 
 #include <string>
-#include "bdd.h"
-#include "bvec.h"
+#include "headers/bdd.h"
+#include "headers/bvec.h"
 
 using namespace std;
 

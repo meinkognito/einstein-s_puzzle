@@ -6,7 +6,7 @@
     license or royalty fees, to use, reproduce, prepare derivative
     works, distribute, and display this software and its documentation
     for any purpose, provided that (1) the above copyright notice and
-    the following two paragraphs appear in all copies of the source code
+    the following two paragraphs appear in all copies of the source src
     and (2) redistributions, including without limitation binaries,
     reproduce these notices in the supporting documentation. Substantial
     modifications to this software may be copyrighted by their authors
@@ -28,70 +28,33 @@
 ========================================================================*/
 
 /*************************************************************************
-  $Header: /cvsroot/buddy/buddy/src/cache.c,v 1.1.1.1 2004/06/25 13:22:34 haimcohen Exp $
-  FILE:  cache.c
-  DESCR: Cache class for caching apply/exist etc. results in BDD package
+  $Header: /cvsroot/buddy/buddy/lib/bddtree.h,v 1.1.1.1 2004/06/25 13:22:26 haimcohen Exp $
+  FILE:  tree.h
+  DESCR: Trees for BDD variables
   AUTH:  Jorn Lind
-  DATE:  (C) june 1997
-*************************************************************************/
-#include <stdlib.h>
-#include "kernel.h"
-#include "cache.h"
-#include "prime.h"
-
-/*************************************************************************
+  DATE:  (C) march 1998
 *************************************************************************/
 
-int BddCache_init(BddCache *cache, int size)
+#ifndef _TREE_H
+#define _TREE_H
+
+typedef struct s_BddTree
 {
-   int n;
+   int first, last;  /* First and last variable in this block */
+   int pos;          /* Sifting position */
+   int *seq;         /* Sequence of first...last in the current order */
+   char fixed;       /* Are the sub-blocks fixed or may they be reordered */
+   int id;           /* A sequential id number given by addblock */
+   struct s_BddTree *next, *prev;
+   struct s_BddTree *nextlevel;
+} BddTree;
 
-   size = bdd_prime_gte(size);
-   
-   if ((cache->table=NEW(BddCacheData,size)) == NULL)
-      return bdd_error(BDD_MEMORY);
-   
-   for (n=0 ; n<size ; n++)
-      cache->table[n].a = -1;
-   cache->tablesize = size;
-   
-   return 0;
-}
+BddTree *bddtree_new(int);
+void     bddtree_del(BddTree *);
+BddTree *bddtree_addrange(BddTree *, int, int, int, int);
+void     bddtree_print(FILE *, BddTree *, int);
 
-
-void BddCache_done(BddCache *cache)
-{
-   free(cache->table);
-   cache->table = NULL;
-   cache->tablesize = 0;
-}
-
-
-int BddCache_resize(BddCache *cache, int newsize)
-{
-   int n;
-
-   free(cache->table);
-
-   newsize = bdd_prime_gte(newsize);
-   
-   if ((cache->table=NEW(BddCacheData,newsize)) == NULL)
-      return bdd_error(BDD_MEMORY);
-   
-   for (n=0 ; n<newsize ; n++)
-      cache->table[n].a = -1;
-   cache->tablesize = newsize;
-   
-   return 0;
-}
-
-
-void BddCache_reset(BddCache *cache)
-{
-   register int n;
-   for (n=0 ; n<cache->tablesize ; n++)
-      cache->table[n].a = -1;
-}
+#endif /* _TREE_H */
 
 
 /* EOF */
