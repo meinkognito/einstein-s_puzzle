@@ -42,27 +42,27 @@ bdd limit3_DownLeft(bdd p[M][N][N], pov, pov);
 void limit4(bdd&, bdd p[M][N][N], pov, pov);
 void limit5(bdd&, bdd p[M][N][N]);
 void limit6(bdd&, bdd p[M][N][N]);
-void fun(char*, int32_t);
+void print_func(char*, int);
 
 int main()
 {
   // инициализация BuDDy
-  bdd_init(100000000, 1000000);
+  bdd_init(100000, 10000);
   bdd_setvarnum(N_VAR);
 
-  // Введение функции p(k, i, j)
+  // Введение функции p(prop, obj, val)
   bdd p[M][N][N];
-  for (uint32_t i = 0; i < M; ++i)
+  for (unsigned propNum = 0; propNum < M; ++propNum)
   {
-    for (uint32_t j = 0; j < N; ++j)
+    for (unsigned objNum = 0; objNum < N; ++objNum)
     {
-      for (uint32_t m = 0; m < N; ++m)
+      for (unsigned propVal = 0; propVal < N; ++propVal)
       {
-        p[i][j][m] = bddtrue;
-        for (uint32_t n = 0; n < LOG_N; ++n)
+        p[propNum][objNum][propVal] = bddtrue;
+        for (unsigned t = 0; t < LOG_N; ++t)
         {
-          const int32_t index = LOG_N * M * j + LOG_N * i + n;
-          p[i][j][m] &= (((m >> n) & 1) ? bdd_ithvar(index) : bdd_nithvar(index));
+          const unsigned index = LOG_N * M * objNum + LOG_N * propNum + t;
+          p[propNum][objNum][propVal] &= (((propVal >> t) & 1) ? bdd_ithvar(index) : bdd_nithvar(index));
         }
       }
     }
@@ -183,21 +183,22 @@ int main()
   // Вывод результатов
   std::ofstream out("output.txt");
   auto satCount = bdd_satcount(solution);
-  out << satCount << " solutions:\n";
-  std::cout << satCount << " solutions:\n";
+  out << satCount << " solution(s):\n";
+  std::cout << satCount << " solution(s):\n";
   out_stream = &out;
   if (satCount)
   {
-    bdd_allsat(solution, fun);
+    bdd_allsat(solution, print_func);
   }
   out_stream = &std::cout;
   if (satCount)
   {
-    bdd_allsat(solution, fun);
+    bdd_allsat(solution, print_func);
   }
   out.close();
   if(satCount) std::cout << "Possible solution(s) in \"output.txt\"\n";
 
+  // Завершение работы с библиотекой BuDDy
   bdd_done();
   return 0;
 }
@@ -209,10 +210,10 @@ void limit1(bdd& solution, bdd p[M][N][N], pov prop)
 
 void limit2(bdd& solution, bdd p[M][N][N], pov lProp, pov rProp)
 {
-  for (unsigned i = 0; i < N; ++i)
+  for (unsigned obj = 0; obj < N; ++obj)
   {
-    bdd l = p[lProp.propNum][i][lProp.propVal];
-    bdd r = p[rProp.propNum][i][rProp.propVal];
+    bdd l = p[lProp.propNum][obj][lProp.propVal];
+    bdd r = p[rProp.propNum][obj][rProp.propVal];
     solution &= (!l & !r) | (l & r);
   }
 }
@@ -220,15 +221,15 @@ void limit2(bdd& solution, bdd p[M][N][N], pov lProp, pov rProp)
 bdd limit3_DownLeft(bdd p[M][N][N], pov lProp, pov rProp)
 {
   bdd temp = bddtrue;
-  for (unsigned i = 0; i < N; ++i)
+  for (unsigned obj = 0; obj < N; ++obj)
   {
     // Все, кроме левого столбца и последнего объекта
-    if (i % SQRT_N != 0 && i != N - 1)
+    if (obj % SQRT_N != 0 && obj != N - 1)
     {
       // dlObj - номер объекта снизу слева от рассматриваемого объекта
-      auto dlObj = (i == (N - SQRT_N + 1) ? 0 :
-              (i / SQRT_N + 1) * N + (i % SQRT_N - 1));
-      bdd l = p[lProp.propNum][i][lProp.propVal];
+      auto dlObj = (obj == (N - SQRT_N + 1) ? 0 :
+              (obj / SQRT_N + 1) * N + (obj % SQRT_N - 1));
+      bdd l = p[lProp.propNum][obj][lProp.propVal];
       bdd r = p[rProp.propNum][dlObj][rProp.propVal];
       temp &= ((!l) & (!r)) | (l & r);
     }
@@ -239,15 +240,15 @@ bdd limit3_DownLeft(bdd p[M][N][N], pov lProp, pov rProp)
 bdd limit3_UpLeft(bdd p[M][N][N], pov lProp, pov rProp)
 {
   bdd temp = bddtrue;
-  for (unsigned i = 0; i < N; ++i)
+  for (unsigned obj = 0; obj < N; ++obj)
   {
     // Все, кроме левого столбца и последнего объекта в первой строке
-    if (i % SQRT_N != 0 && i != SQRT_N - 1)
+    if (obj % SQRT_N != 0 && obj != SQRT_N - 1)
     {
       // ulObj - номер объекта сверху слева от рассматриваемого объекта
-      auto ulObj = (i == 1 ? N - SQRT_N :
-                    (i / SQRT_N - 1) * N + (i % SQRT_N - 1));
-      bdd a = p[lProp.propNum][i][lProp.propVal];
+      auto ulObj = (obj == 1 ? N - SQRT_N :
+                    (obj / SQRT_N - 1) * N + (obj % SQRT_N - 1));
+      bdd a = p[lProp.propNum][obj][lProp.propVal];
       bdd b = p[rProp.propNum][ulObj][rProp.propVal];
       temp &= ((!a) & (!b)) | (a & b);
     }
@@ -255,40 +256,42 @@ bdd limit3_UpLeft(bdd p[M][N][N], pov lProp, pov rProp)
   return temp;
 }
 
-void limit4(bdd& solution, bdd p[M][N][N], pov lhsObj, pov rhsObj)
+void limit4(bdd& solution, bdd p[M][N][N], pov lProp, pov rProp)
 {
-  solution &= (limit3_UpLeft(p, lhsObj, rhsObj)
-          | limit3_DownLeft(p, lhsObj, rhsObj));
+  solution &= (limit3_UpLeft(p, lProp, rProp)
+          | limit3_DownLeft(p, lProp, rProp));
 }
 
+// Проверка, что никакое значение одного свойства не встерчается дважды
 void limit5(bdd& solution, bdd p[M][N][N])
 {
-  for (unsigned i = 0; i < M; ++i)
+  for (unsigned prop = 0; prop < M; ++prop)
   {
-    for (unsigned j = 0; j < N - 1; ++j)
+    for (unsigned obj1 = 0; obj1 < N - 1; ++obj1)
     {
-      for (unsigned m = j + 1; m < N; ++m)
+      for (unsigned obj2 = obj1 + 1; obj2 < N; ++obj2)
       {
-        for (unsigned n = 0; n < N; ++n)
+        for (unsigned val = 0; val < N; ++val)
         {
-          solution &= (!p[i][j][n] | !p[i][m][n]);
+          solution &= (!p[prop][obj1][val] | !p[prop][obj2][val]);
         }
       }
     }
   }
 }
 
+// Проверка, что все propVal меньше N
 void limit6(bdd& solution, bdd p[M][N][N])
 {
-  for (unsigned i = 0; i < N; ++i)
+  for (unsigned obj = 0; obj < N; ++obj)
   {
     bdd temp = bddtrue;
-    for (unsigned j = 0; j < M; ++j)
+    for (unsigned prop = 0; prop < M; ++prop)
     {
       bdd tempSecond = bddfalse;
-      for (unsigned m = 0; m < N; ++m)
+      for (unsigned val = 0; val < N; ++val)
       {
-        tempSecond |= p[j][i][m];
+        tempSecond |= p[prop][obj][val];
       }
       temp &= tempSecond;
     }
@@ -313,7 +316,7 @@ void print()
     }
     (*out_stream) << '\n';
   }
-  (*out_stream) << std::endl;
+  (*out_stream) << '\n';
 }
 
 void build(char* varset, unsigned n, unsigned I)
@@ -344,7 +347,7 @@ void build(char* varset, unsigned n, unsigned I)
   build(varset, n, I + 1);
 }
 
-void fun(char* varset, int32_t size)
+void print_func(char* varset, int size)
 {
   build(varset, size, 0);
 }
