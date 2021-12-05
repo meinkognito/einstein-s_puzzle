@@ -248,9 +248,9 @@ bdd limit3_UpLeft(bdd p[M][N][N], pov lProp, pov rProp)
       // ulObj - номер объекта сверху слева от рассматриваемого объекта
       auto ulObj = (obj == 1 ? N - SQRT_N :
                     (obj / SQRT_N - 1) * N + (obj % SQRT_N - 1));
-      bdd a = p[lProp.propNum][obj][lProp.propVal];
-      bdd b = p[rProp.propNum][ulObj][rProp.propVal];
-      temp &= ((!a) & (!b)) | (a & b);
+      bdd l = p[lProp.propNum][obj][lProp.propVal];
+      bdd r = p[rProp.propNum][ulObj][rProp.propVal];
+      temp &= ((!l) & (!r)) | (l & r);
     }
   }
   return temp;
