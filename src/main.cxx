@@ -47,7 +47,7 @@ void print_func(char*, int);
 int main()
 {
   // инициализация BuDDy
-  bdd_init(10000000, 1000000);
+  bdd_init(100000, 10000);
   bdd_setvarnum(N_VAR);
 
   // Введение функции p(prop, obj, val)
