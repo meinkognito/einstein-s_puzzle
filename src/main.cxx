@@ -47,7 +47,7 @@ void print_func(char*, int);
 int main()
 {
   // инициализация BuDDy
-  bdd_init(100000, 10000);
+  bdd_init(10000000, 1000000);
   bdd_setvarnum(N_VAR);
 
   // Введение функции p(prop, obj, val)
@@ -205,7 +205,7 @@ int main()
 
 void limit1(bdd& solution, bdd p[M][N][N], pov prop)
 {
-  solution &= p[prop.propNum][prop.objNum][prop.propVal];
+  solution  &= p[prop.propNum][prop.objNum][prop.propVal];
 }
 
 void limit2(bdd& solution, bdd p[M][N][N], pov lProp, pov rProp)
@@ -228,7 +228,7 @@ bdd limit3_DownLeft(bdd p[M][N][N], pov lProp, pov rProp)
     {
       // dlObj - номер объекта снизу слева от рассматриваемого объекта
       auto dlObj = (obj == (N - SQRT_N + 1) ? 0 :
-              (obj / SQRT_N + 1) * N + (obj % SQRT_N - 1));
+                    (obj / SQRT_N + 1) * SQRT_N + (obj % SQRT_N - 1));
       bdd l = p[lProp.propNum][obj][lProp.propVal];
       bdd r = p[rProp.propNum][dlObj][rProp.propVal];
       temp &= ((!l) & (!r)) | (l & r);
@@ -247,7 +247,7 @@ bdd limit3_UpLeft(bdd p[M][N][N], pov lProp, pov rProp)
     {
       // ulObj - номер объекта сверху слева от рассматриваемого объекта
       auto ulObj = (obj == 1 ? N - SQRT_N :
-                    (obj / SQRT_N - 1) * N + (obj % SQRT_N - 1));
+                    (obj / SQRT_N - 1) * SQRT_N + (obj % SQRT_N - 1));
       bdd l = p[lProp.propNum][obj][lProp.propVal];
       bdd r = p[rProp.propNum][ulObj][rProp.propVal];
       temp &= ((!l) & (!r)) | (l & r);
@@ -259,7 +259,7 @@ bdd limit3_UpLeft(bdd p[M][N][N], pov lProp, pov rProp)
 void limit4(bdd& solution, bdd p[M][N][N], pov lProp, pov rProp)
 {
   solution &= (limit3_UpLeft(p, lProp, rProp)
-          | limit3_DownLeft(p, lProp, rProp));
+               | limit3_DownLeft(p, lProp, rProp));
 }
 
 // Проверка, что никакое значение одного свойства не встерчается дважды
