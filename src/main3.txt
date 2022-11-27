@@ -1,0 +1,308 @@
+//
+// Created by Denis Beloshitskiy on 21/11/22.
+//
+
+#include "bdd.h"
+#include <iostream>
+#include <cmath>
+
+constexpr int log2(int x) {
+  return x < 3 ? 1 : 1 + log2(x - x / 2);
+}
+
+constexpr int N = 9;                       // число объектов
+constexpr int LOG_N = log2(N);          // логарифм по основанию 2
+constexpr int M = 4;                       // число свойств
+constexpr int N_VAR = N * M * LOG_N;       // число булевых переменных
+char var[N_VAR];                           // массив булевых переменных
+const int DIMENSION = std::sqrt(N); // размерность сетки
+
+void fill();
+void limit1(bdd &);
+void limit2(bdd &);
+void limit3(bdd &);
+void limit4(bdd &);
+void limit5(bdd &);
+void limit6(bdd &);
+void print_func(char *, int);
+
+bdd p[M][N][N];
+
+int main() {
+  // инициализация BuDDy
+  bdd_init(10000000, 100000);
+  bdd_setvarnum(N_VAR);
+  
+  // БДД, являющаяся решением задачи
+  bdd solution = bddtrue;
+  fill();
+
+  limit1(solution);
+  limit2(solution);
+  limit3(solution);
+  limit4(solution);
+  limit5(solution);
+  limit6(solution);
+
+  std::size_t satcount = bdd_satcount(solution);
+  std::cout << "Found " << satcount << " solution(s)\n\n";
+  if (satcount)
+  {
+    bdd_allsat(solution, print_func);
+  }
+
+  // Завершение работы с библиотекой BuDDy
+  bdd_done();
+  return 0;
+}
+
+void limit1(bdd &solution) {
+  solution &= p[2][1][6];
+  solution &= p[1][4][1];
+  solution &= p[3][3][2];
+  solution &= p[0][8][0];
+  solution &= p[1][8][6];
+  solution &= p[0][6][2];
+  solution &= p[2][5][1];
+
+  //Доп для сложного уровня
+  solution &= p[1][7][7];
+  solution &= p[3][1][5];
+}
+
+void limit2(bdd &solution) {
+  int index;
+  for (std::size_t i = 0; i < N; i++) {
+    if ((i > DIMENSION) && (i % DIMENSION != 0)) // левое-верхнее условие без склейки
+    {
+      index = i - DIMENSION - 1;
+      solution &= !(p[0][index][4] ^ p[2][i][4]);
+      solution &= !(p[2][index][0] ^ p[0][i][5]);
+      solution &= !(p[3][index][1] ^ p[2][i][2]);
+    }
+    if (i >= 1 && i <= DIMENSION - 1) // склейка для элементов верхней строкм
+    {
+      index = N - DIMENSION + (i % DIMENSION - 1);
+      solution &= !(p[0][index][4] ^ p[2][i][4]);
+      solution &= !(p[2][index][0] ^ p[0][i][5]);
+      solution &= !(p[3][index][1] ^ p[2][i][2]);
+    }
+    if (i < N - DIMENSION) // нижнее условие без склейки
+    {
+      index = i + DIMENSION;
+      solution &= !(p[0][index][7] ^ p[1][i][3]);
+      solution &= !(p[0][index][8] ^ p[3][i][6]);
+    }
+    if (i >= N - DIMENSION) // склейка для элементов нижней строкм
+    {
+      index = i % DIMENSION;
+      solution &= !(p[0][index][7] ^ p[1][i][3]);
+      solution &= !(p[0][index][8] ^ p[3][i][6]);
+    }
+  }
+}
+
+void limit3(bdd &solution) {
+  int index;
+  for (std::size_t i = 0; i < N; i++) {
+    if ((i > DIMENSION) && (i % DIMENSION != 0)) // левое-верхнее условие без склейки
+    {
+      index = i - DIMENSION - 1;
+      solution &= !(p[0][index][4] ^ p[2][i][4]);
+      solution &= !(p[2][index][0] ^ p[0][i][5]);
+      solution &= !(p[3][index][1] ^ p[2][i][2]);
+    }
+    if (i >= 1 && i <= DIMENSION - 1) // склейка для элементов верхней строкм
+    {
+      index = N - DIMENSION + (i % DIMENSION - 1);
+      solution &= !(p[0][index][4] ^ p[2][i][4]);
+      solution &= !(p[2][index][0] ^ p[0][i][5]);
+      solution &= !(p[3][index][1] ^ p[2][i][2]);
+    }
+    if (i < N - DIMENSION) // нижнее условие без склейки
+    {
+      index = i + DIMENSION;
+      solution &= !(p[0][index][7] ^ p[1][i][3]);
+      solution &= !(p[0][index][8] ^ p[3][i][6]);
+    }
+    if (i >= N - DIMENSION) // склейка для элементов нижней строкм
+    {
+      index = i % DIMENSION;
+      solution &= !(p[0][index][7] ^ p[1][i][3]);
+      solution &= !(p[0][index][8] ^ p[3][i][6]);
+    }
+  }
+}
+
+void limit4(bdd &solution) {
+  int left_top_index;
+  int bottom_index;
+  for (std::size_t i = 0; i < N; i++) {
+    if ((i > DIMENSION) && (i % DIMENSION != 0) && (i < N - DIMENSION)) // 2 соседа уже есть
+    {
+      left_top_index = i - DIMENSION - 1;
+      bottom_index = i + DIMENSION;
+      solution &= !(p[1][left_top_index][8] ^ p[1][i][0]) | !(p[1][bottom_index][8] ^ p[1][i][0]);
+      solution &= !(p[2][left_top_index][8] ^ p[3][i][1]) | !(p[2][bottom_index][8] ^ p[3][i][1]);
+      solution &= !(p[0][left_top_index][2] ^ p[1][i][5]) | !(p[0][bottom_index][2] ^ p[1][i][5]);
+    }
+    else if (i <= DIMENSION) // есть только нижний сосед
+    {
+      bottom_index = i + DIMENSION;
+      if (i % DIMENSION != 0) // склейка для элементов верхней строкм
+      {
+        left_top_index = N - DIMENSION + (i % DIMENSION - 1);
+        solution &= !(p[1][left_top_index][8] ^ p[1][i][0]) | !(p[1][bottom_index][8] ^ p[1][i][0]);
+        solution &= !(p[2][left_top_index][8] ^ p[3][i][1]) | !(p[2][bottom_index][8] ^ p[3][i][1]);
+        solution &= !(p[0][left_top_index][2] ^ p[1][i][5]) | !(p[0][bottom_index][2] ^ p[1][i][5]);
+      }
+      else {
+        solution &= !(p[1][bottom_index][8] ^ p[1][i][0]);
+        solution &= !(p[2][bottom_index][8] ^ p[3][i][1]);
+        solution &= !(p[0][bottom_index][2] ^ p[1][i][5]);
+      }
+    }
+    else if ((i >= N - DIMENSION) && (i % DIMENSION != 0)) // есть только левый-верхний сосед
+    {
+      left_top_index = i - DIMENSION - 1;
+      if (i % DIMENSION != 0) // склейка для элементов нижней строкм
+      {
+        bottom_index = i % DIMENSION;
+        solution &= !(p[1][left_top_index][8] ^ p[1][i][0]) | !(p[1][bottom_index][8] ^ p[1][i][0]);
+        solution &= !(p[2][left_top_index][8] ^ p[3][i][1]) | !(p[2][bottom_index][8] ^ p[3][i][1]);
+        solution &= !(p[0][left_top_index][2] ^ p[1][i][5]) | !(p[0][bottom_index][2] ^ p[1][i][5]);
+      }
+      else {
+        solution &= !(p[1][left_top_index][8] ^ p[1][i][0]);
+        solution &= !(p[2][left_top_index][8] ^ p[3][i][1]);
+        solution &= !(p[0][left_top_index][2] ^ p[1][i][5]);
+      }
+    }
+  }
+}
+
+// Проверка, что все значения одного свойства уникальны
+void limit5(bdd &solution) {
+//  for (unsigned prop = 0; prop < M; ++prop) {
+//    for (unsigned obj1 = 0; obj1 < N - 1; ++obj1) {
+//      for (unsigned obj2 = obj1 + 1; obj2 < N; ++obj2) {
+//        for (unsigned val = 0; val < N; ++val) {
+//          solution &= (!p[prop][obj1][val] | !p[prop][obj2][val]);
+//        }
+//      }
+//    }
+//  }
+  for (std::size_t i = 0; i < N; i++)
+  {
+    bdd bdd1 = bddfalse;
+    bdd bdd2 = bddfalse;
+    bdd bdd3 = bddfalse;
+    bdd bdd4 = bddfalse;
+
+    for (std::size_t j = 0; j < N; j++)
+    {
+      bdd1 |= p[0][i][j];
+      bdd2 |= p[1][i][j];
+      bdd3 |= p[2][i][j];
+      bdd4 |= p[3][i][j];
+    }
+    solution &= bdd1 & bdd2 & bdd3 & bdd4;
+  }
+}
+
+// Проверка, что все propertyValue меньше N
+void limit6(bdd &solution) {
+//  for (unsigned obj = 0; obj < N; ++obj) {
+//    bdd temp = bddtrue;
+//    for (unsigned prop = 0; prop < M; ++prop) {
+//      bdd tempSecond = bddfalse;
+//      for (unsigned val = 0; val < N; ++val) {
+//        tempSecond |= p[prop][obj][val];
+//      }
+//      temp &= tempSecond;
+//    }
+//    solution &= temp;
+//  }
+  for (std::size_t j = 0; j < N; j++)
+  {
+    for (std::size_t i = 0; i < N - 1; i++)
+    {
+      for (std::size_t k = i + 1; k < N; k++)
+      {
+        solution &= p[0][i][j] >> !p[0][k][j];
+        solution &= p[1][i][j] >> !p[1][k][j];
+        solution &= p[2][i][j] >> !p[2][k][j];
+        solution &= p[3][i][j] >> !p[3][k][j];
+      }
+    }
+  }
+}
+
+void print() {
+  for (unsigned i = 0; i < N; ++i) {
+    std::cout << i << ": ";
+    for (unsigned j = 0; j < M; ++j) {
+      unsigned J = i * M * LOG_N + j * LOG_N;
+      unsigned num = 0;
+      for (unsigned k = 0; k < LOG_N; ++k) {
+        num += (unsigned) (var[J + k] << k);
+      }
+      std::cout << num << ' ';
+    }
+    std::cout << '\n';
+  }
+  std::cout << '\n';
+}
+
+void build(char *varset, unsigned n, unsigned I) {
+  if (I == n - 1) {
+    if (varset[I] >= 0) {
+      var[I] = varset[I];
+      print();
+      return;
+    }
+    var[I] = 0;
+    print();
+    var[I] = 1;
+    print();
+    return;
+  }
+  if (varset[I] >= 0) {
+    var[I] = varset[I];
+    build(varset, n, I + 1);
+    return;
+  }
+  var[I] = 0;
+  build(varset, n, I + 1);
+  var[I] = 1;
+  build(varset, n, I + 1);
+}
+
+void print_func(char *varset, int size) {
+  build(varset, size, 0);
+}
+
+void fill() {
+  std::size_t I = 0;
+  for (std::size_t i = 0; i < N; i++) {
+    for (std::size_t j = 0; j < N; j++) {
+      p[0][i][j] = bddtrue;
+      for (std::size_t k = 0; k < LOG_N; k++) {
+        p[0][i][j] &= ((j >> k) & 1) ? bdd_ithvar(I + k) : bdd_nithvar(I + k);
+      }
+      p[1][i][j] = bddtrue;
+      for (std::size_t k = 0; k < LOG_N; k++) {
+        p[1][i][j] &= ((j >> k) & 1) ? bdd_ithvar(I + LOG_N + k) : bdd_nithvar(I + LOG_N + k);
+      }
+      p[2][i][j] = bddtrue;
+      for (std::size_t k = 0; k < LOG_N; k++) {
+        p[2][i][j] &= ((j >> k) & 1) ? bdd_ithvar(I + LOG_N * 2 + k) : bdd_nithvar(I + LOG_N * 2 + k);
+      }
+      p[3][i][j] = bddtrue;
+      for (std::size_t k = 0; k < LOG_N; k++) {
+        p[3][i][j] &= ((j >> k) & 1) ? bdd_ithvar(I + LOG_N * 3 + k) : bdd_nithvar(I + LOG_N * 3 + k);
+      }
+    }
+    I += LOG_N * M;
+  }
+}

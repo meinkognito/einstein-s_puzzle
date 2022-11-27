@@ -1,330 +1,41 @@
+#pragma comment(lib, "bdd_debug.lib")
+
 #include "bdd.h"
-#include <iostream>
-#include <string.h>
 #include <fstream>
-#include <cmath>
+#include <math.h>
 
-constexpr int log2(int x)
-{
-  return x < 3 ? 1 : 1 + log2(x - x / 2);
-}
-// число объектов
-constexpr int N = 9;
-// число свойств
-constexpr int M = 4;
-// логарифм по основанию 2, взятый с потолком
-constexpr int LOG_N = log2(N);
-// число булевых переменных
-constexpr int N_VAR = N * M * LOG_N;
-// корень квадратный из N
-const int SQRT_N = std::sqrt(N);
-// входной файл
-const char* INPUT_FILE = "C:\\Users\\Admin\\CLionProjects\\BuDDy\\src\\in.txt";
-char var[N_VAR];
-std::ostream* out_stream;
+const unsigned N = 9;      // число объектов
+const unsigned SIDE = sqrt(N);  // размерность таблицы
+const unsigned M = 4;      // число свойств
+const unsigned LOG_N = 4;    // максимальное изменение индекса, отвечающего за бит свойства
+const unsigned VAR_NUM = 144;  // количество булевых переменных
+char var[VAR_NUM];          // массив булевых переменных
+bdd p1[N][N];            // свойство 1 название
+bdd p2[N][N];            // свойство 2 цена
+bdd p3[N][N];            // свойство 3 цвет
+bdd p4[N][N];            // свойство 4 принт
 
-// p-property o-object v-propVal
-struct pov
-{
-  pov() : propNum(-1), objNum(-1), propVal(-1) {}
-  //номер свойства
-  int propNum;
-  // номер объекта
-  int objNum;
-  //значение свойства
-  int propVal;
-};
+bdd p[M][N][N];
 
-void limit1(bdd&, bdd p[M][N][N], pov);
-void limit2(bdd&, bdd p[M][N][N], pov, pov);
-bdd limit3_UpLeft(bdd p[M][N][N], pov, pov);
-bdd limit3_DownLeft(bdd p[M][N][N], pov, pov);
-void limit4(bdd&, bdd p[M][N][N], pov, pov);
-void limit5(bdd&, bdd p[M][N][N]);
-void limit6(bdd&, bdd p[M][N][N]);
-void print_func(char*, int);
-
-int main()
-{
-  // инициализация BuDDy
-  bdd_init(100000, 10000);
-  bdd_setvarnum(N_VAR);
-
-  // Введение функции p(prop, obj, val)
-  bdd p[M][N][N];
-  for (unsigned propNum = 0; propNum < M; ++propNum)
-  {
-    for (unsigned objNum = 0; objNum < N; ++objNum)
-    {
-      for (unsigned propVal = 0; propVal < N; ++propVal)
-      {
-        p[propNum][objNum][propVal] = bddtrue;
-        for (unsigned t = 0; t < LOG_N; ++t)
-        {
-          const unsigned index = LOG_N * M * objNum + LOG_N * propNum + t;
-          p[propNum][objNum][propVal] &= (((propVal >> t) & 1) ? bdd_ithvar(index) : bdd_nithvar(index));
-        }
+void print() {
+  for (unsigned i = 0; i < N; i++) {
+    std::cout << i << ": ";
+    for (unsigned j = 0; j < M; j++) {
+      int J = i * M * LOG_N + j * LOG_N;
+      int num = 0;
+      for (unsigned k = 0; k < LOG_N; k++) {
+        num += (unsigned) (var[J + k] << k);
       }
+      std::cout << num << ' ';
     }
+    std::cout << '\n';
   }
-
-  // БДД, являющаяся решением задачи
-  bdd solution = bddtrue;
-
-  // Ввод и применение ограничений
-  try
-  {
-    std::ifstream in;
-    in.open(INPUT_FILE);
-    if(!in.is_open())
-    {
-      throw std::invalid_argument("ERROR: can`t open file.");
-    }
-    else
-    {
-      char command[3];
-      while(!in.eof())
-      {
-        pov prop1;
-        pov prop2;
-        in >> command;
-        if(in.bad())
-        {
-          throw std::invalid_argument("ERROR: bad file.");
-        }
-          // Ограничение 1 типа
-        if(strcmp(command, "L1") == 0)
-        {
-          in >> prop1.propNum >> prop1.objNum >> prop1.propVal;
-          if(!in.bad())
-          {
-            limit1(solution, p, prop1);
-          }
-          else
-          {
-            throw std::invalid_argument("ERROR: bad file.");
-          }
-        }
-          // Ограничение 2 типа
-        else if (strcmp(command, "L2") == 0)
-        {
-          in >> prop1.propNum >> prop1.propVal;
-          in >> prop2.propNum >> prop2.propVal;
-          if(!in.bad())
-          {
-            limit2(solution, p, prop1, prop2);
-          }
-          else
-          {
-            throw std::invalid_argument("ERROR: bad file.");
-          }
-        }
-          // Ограничение 3 типа
-        else if (strcmp(command, "L3") == 0)
-        {
-          char dir[5];
-          in >> prop1.propNum >> prop1.propVal;
-          in >> dir;
-          in >> prop2.propNum >> prop2.propVal;
-          if(!in.bad())
-          {
-            if(strcmp(dir, "UP") == 0)
-            {
-              solution &= limit3_UpLeft(p, prop1, prop2);
-            }
-            else if (strcmp(dir, "DOWN") == 0)
-            {
-              solution &= limit3_DownLeft(p, prop1, prop2);
-            }
-            else
-            {
-              throw std::invalid_argument("ERROR: bad file.");
-            }
-          }
-        }
-          // Ограничение 4 типа
-        else if (strcmp(command, "L4") == 0)
-        {
-          in >> prop1.propNum >> prop1.propVal;
-          in >> prop2.propNum >> prop2.propVal;
-          if(!in.bad())
-          {
-            limit4(solution, p, prop1, prop2);
-          }
-          else
-          {
-            throw std::invalid_argument("ERROR: bad file.");
-          }
-        }
-          // Конец ввода ограничений
-        else if (strcmp(command, "EOF") == 0)
-        {
-          break;
-        }
-        else
-        {
-          throw std::invalid_argument("ERROR: bad file.");
-        }
-        if(in.get() != '\n')
-        {
-          throw std::invalid_argument("ERROR: bad file.");
-        }
-      }
-    }
-    limit6(solution, p);
-    limit5(solution, p);
-  }
-  catch (std::invalid_argument& e)
-  {
-    std::cerr << e.what();
-    return 1;
-  }
-
-  // Вывод результатов
-  std::ofstream out("output.txt");
-  auto satCount = bdd_satcount(solution);
-  out << satCount << " solution(s):\n";
-  std::cout << satCount << " solution(s):\n";
-  out_stream = &out;
-  if (satCount)
-  {
-    bdd_allsat(solution, print_func);
-  }
-  out_stream = &std::cout;
-  if (satCount)
-  {
-    bdd_allsat(solution, print_func);
-  }
-  out.close();
-  if(satCount) std::cout << "Possible solution(s) in \"output.txt\"\n";
-
-  // Завершение работы с библиотекой BuDDy
-  bdd_done();
-  return 0;
+  std::cout << '\n';
 }
 
-void limit1(bdd& solution, bdd p[M][N][N], pov prop)
-{
-  solution  &= p[prop.propNum][prop.objNum][prop.propVal];
-}
-
-void limit2(bdd& solution, bdd p[M][N][N], pov lProp, pov rProp)
-{
-  for (unsigned obj = 0; obj < N; ++obj)
-  {
-    bdd l = p[lProp.propNum][obj][lProp.propVal];
-    bdd r = p[rProp.propNum][obj][rProp.propVal];
-    solution &= (!l & !r) | (l & r);
-  }
-}
-
-bdd limit3_DownLeft(bdd p[M][N][N], pov lProp, pov rProp)
-{
-  bdd temp = bddtrue;
-  for (unsigned obj = 0; obj < N; ++obj)
-  {
-    // Все, кроме левого столбца и последнего объекта
-    if (obj % SQRT_N != 0 && obj != N - 1)
-    {
-      // dlObj - номер объекта снизу слева от рассматриваемого объекта
-      auto dlObj = (obj == (N - SQRT_N + 1) ? 0 :
-                    (obj / SQRT_N + 1) * SQRT_N + (obj % SQRT_N - 1));
-      bdd l = p[lProp.propNum][obj][lProp.propVal];
-      bdd r = p[rProp.propNum][dlObj][rProp.propVal];
-      temp &= ((!l) & (!r)) | (l & r);
-    }
-  }
-  return temp;
-}
-
-bdd limit3_UpLeft(bdd p[M][N][N], pov lProp, pov rProp)
-{
-  bdd temp = bddtrue;
-  for (unsigned obj = 0; obj < N; ++obj)
-  {
-    // Все, кроме левого столбца и последнего объекта в первой строке
-    if (obj % SQRT_N != 0 && obj != SQRT_N - 1)
-    {
-      // ulObj - номер объекта сверху слева от рассматриваемого объекта
-      auto ulObj = (obj == 1 ? N - SQRT_N :
-                    (obj / SQRT_N - 1) * SQRT_N + (obj % SQRT_N - 1));
-      bdd l = p[lProp.propNum][obj][lProp.propVal];
-      bdd r = p[rProp.propNum][ulObj][rProp.propVal];
-      temp &= ((!l) & (!r)) | (l & r);
-    }
-  }
-  return temp;
-}
-
-void limit4(bdd& solution, bdd p[M][N][N], pov lProp, pov rProp)
-{
-  solution &= (limit3_UpLeft(p, lProp, rProp)
-               | limit3_DownLeft(p, lProp, rProp));
-}
-
-// Проверка, что никакое значение одного свойства не встерчается дважды
-void limit5(bdd& solution, bdd p[M][N][N])
-{
-  for (unsigned prop = 0; prop < M; ++prop)
-  {
-    for (unsigned obj1 = 0; obj1 < N - 1; ++obj1)
-    {
-      for (unsigned obj2 = obj1 + 1; obj2 < N; ++obj2)
-      {
-        for (unsigned val = 0; val < N; ++val)
-        {
-          solution &= (!p[prop][obj1][val] | !p[prop][obj2][val]);
-        }
-      }
-    }
-  }
-}
-
-// Проверка, что все propVal меньше N
-void limit6(bdd& solution, bdd p[M][N][N])
-{
-  for (unsigned obj = 0; obj < N; ++obj)
-  {
-    bdd temp = bddtrue;
-    for (unsigned prop = 0; prop < M; ++prop)
-    {
-      bdd tempSecond = bddfalse;
-      for (unsigned val = 0; val < N; ++val)
-      {
-        tempSecond |= p[prop][obj][val];
-      }
-      temp &= tempSecond;
-    }
-    solution &= temp;
-  }
-}
-
-void print()
-{
-  for (unsigned i = 0; i < N; ++i)
-  {
-    (*out_stream) << i << ": ";
-    for (unsigned j = 0; j < M; ++j)
-    {
-      unsigned J = i * M * LOG_N + j * LOG_N;
-      unsigned num = 0;
-      for (unsigned k = 0; k < LOG_N; ++k)
-      {
-        num += (unsigned)(var[J + k] << k);
-      }
-      (*out_stream) << num << ' ';
-    }
-    (*out_stream) << '\n';
-  }
-  (*out_stream) << '\n';
-}
-
-void build(char* varset, unsigned n, unsigned I)
-{
-  if (I == n - 1)
-  {
-    if (varset[I] >= 0)
-    {
+void build(const char *varset, const unsigned n, const unsigned I) {
+  if (I == n - 1) {
+    if (varset[I] >= 0) {
       var[I] = varset[I];
       print();
       return;
@@ -335,8 +46,7 @@ void build(char* varset, unsigned n, unsigned I)
     print();
     return;
   }
-  if (varset[I] >= 0)
-  {
+  if (varset[I] >= 0) {
     var[I] = varset[I];
     build(varset, n, I + 1);
     return;
@@ -347,7 +57,192 @@ void build(char* varset, unsigned n, unsigned I)
   build(varset, n, I + 1);
 }
 
-void print_func(char* varset, int size)
-{
+void fun(char *varset, int size) {
   build(varset, size, 0);
+}
+
+void fill() {
+  unsigned I = 0;
+  for (unsigned i = 0; i < N; i++) {
+    for (unsigned j = 0; j < N; j++) {
+      p[0][i][j] = bddtrue;
+      for (unsigned k = 0; k < LOG_N; k++) {
+        p[0][i][j] &= ((j >> k) & 1) ? bdd_ithvar(I + k) : bdd_nithvar(I + k);
+      }
+      p[1][i][j] = bddtrue;
+      for (unsigned k = 0; k < LOG_N; k++) {
+        p[1][i][j] &= ((j >> k) & 1) ? bdd_ithvar(I + LOG_N + k) : bdd_nithvar(I + LOG_N + k);
+      }
+      p[2][i][j] = bddtrue;
+      for (unsigned k = 0; k < LOG_N; k++) {
+        p[2][i][j] &= ((j >> k) & 1) ? bdd_ithvar(I + LOG_N * 2 + k) : bdd_nithvar(I + LOG_N * 2 + k);
+      }
+      p[3][i][j] = bddtrue;
+      for (unsigned k = 0; k < LOG_N; k++) {
+        p[3][i][j] &= ((j >> k) & 1) ? bdd_ithvar(I + LOG_N * 3 + k) : bdd_nithvar(I + LOG_N * 3 + k);
+      }
+    }
+    I += LOG_N * M;
+  }
+}
+
+// Ограничения 1-ого типа
+void limit1(bdd &solution) {
+  solution &= p[2][1][6];
+  solution &= p[1][4][1];
+  solution &= p[3][3][2];
+  solution &= p[0][8][0];
+  solution &= p[1][8][6];
+  solution &= p[0][6][2];
+  solution &= p[2][5][1];
+
+  //Доп для сложного уровня
+  solution &= p[1][7][7];
+  solution &= p[3][1][5];
+}
+
+// Ограничения 2-ого типа
+void limit2(bdd &solution) {
+  for (unsigned i = 0; i < N; i++) {
+    solution &= !(p[0][i][1] ^ p[2][i][5]);
+    solution &= !(p[1][i][7] ^ p[3][i][7]);
+    solution &= !(p[2][i][3] ^ p[3][i][3]);
+    solution &= !(p[0][i][8] ^ p[3][i][0]);
+
+    //Доп для сложного уровня
+    solution &= !(p[0][i][6] ^ p[1][i][4]);
+    solution &= !(p[0][i][5] ^ p[1][i][7]);
+    solution &= !(p[3][i][8] ^ p[1][i][2]);
+    solution &= !(p[2][i][7] ^ p[1][i][2]);
+  }
+}
+
+// Ограничения 3-его типа
+void limit3(bdd &solution) {
+  int index;
+  for (unsigned i = 0; i < N; i++) {
+    if ((i > SIDE) && (i % SIDE != 0)) // левое-верхнее условие без склейки
+    {
+      index = i - SIDE - 1;
+      solution &= !(p[0][index][4] ^ p[2][i][4]);
+      solution &= !(p[2][index][0] ^ p[0][i][5]);
+      solution &= !(p[3][index][1] ^ p[2][i][2]);
+    }
+    if (i >= 1 && i <= SIDE - 1) // склейка для элементов верхней строкм
+    {
+      index = N - SIDE + (i % SIDE - 1);
+      solution &= !(p[0][index][4] ^ p[2][i][4]);
+      solution &= !(p[2][index][0] ^ p[0][i][5]);
+      solution &= !(p[3][index][1] ^ p[2][i][2]);
+    }
+    if (i < N - SIDE) // нижнее условие без склейки
+    {
+      index = i + SIDE;
+      solution &= !(p[0][index][7] ^ p[1][i][3]);
+      solution &= !(p[0][index][8] ^ p[3][i][6]);
+    }
+    if (i >= N - SIDE) // склейка для элементов нижней строкм
+    {
+      index = i % SIDE;
+      solution &= !(p[0][index][7] ^ p[1][i][3]);
+      solution &= !(p[0][index][8] ^ p[3][i][6]);
+    }
+  }
+}
+
+// Ограничения 4-ого типа
+void limit4(bdd &solution) {
+  int left_top_index;
+  int bottom_index;
+  for (unsigned i = 0; i < N; i++) {
+    if ((i > SIDE) && (i % SIDE != 0) && (i < N - SIDE)) // 2 соседа уже есть
+    {
+      left_top_index = i - SIDE - 1;
+      bottom_index = i + SIDE;
+      solution &= !(p[1][left_top_index][8] ^ p[1][i][0]) | !(p[1][bottom_index][8] ^ p[1][i][0]);
+      solution &= !(p[2][left_top_index][8] ^ p[3][i][1]) | !(p[2][bottom_index][8] ^ p[3][i][1]);
+      solution &= !(p[0][left_top_index][2] ^ p[1][i][5]) | !(p[0][bottom_index][2] ^ p[1][i][5]);
+    }
+    else if (i <= SIDE) // есть только нижний сосед
+    {
+      bottom_index = i + SIDE;
+      if (i % SIDE != 0) // склейка для элементов верхней строкм
+      {
+        left_top_index = N - SIDE + (i % SIDE - 1);
+        solution &= !(p[1][left_top_index][8] ^ p[1][i][0]) | !(p[1][bottom_index][8] ^ p[1][i][0]);
+        solution &= !(p[2][left_top_index][8] ^ p[3][i][1]) | !(p[2][bottom_index][8] ^ p[3][i][1]);
+        solution &= !(p[0][left_top_index][2] ^ p[1][i][5]) | !(p[0][bottom_index][2] ^ p[1][i][5]);
+      }
+      else {
+        solution &= !(p[1][bottom_index][8] ^ p[1][i][0]);
+        solution &= !(p[2][bottom_index][8] ^ p[3][i][1]);
+        solution &= !(p[0][bottom_index][2] ^ p[1][i][5]);
+      }
+    }
+    else if ((i >= N - SIDE) && (i % SIDE != 0)) // есть только левый-верхний сосед
+    {
+      left_top_index = i - SIDE - 1;
+      if (i % SIDE != 0) // склейка для элементов нижней строкм
+      {
+        bottom_index = i % SIDE;
+        solution &= !(p[1][left_top_index][8] ^ p[1][i][0]) | !(p[1][bottom_index][8] ^ p[1][i][0]);
+        solution &= !(p[2][left_top_index][8] ^ p[3][i][1]) | !(p[2][bottom_index][8] ^ p[3][i][1]);
+        solution &= !(p[0][left_top_index][2] ^ p[1][i][5]) | !(p[0][bottom_index][2] ^ p[1][i][5]);
+      }
+      else {
+        solution &= !(p[1][left_top_index][8] ^ p[1][i][0]);
+        solution &= !(p[2][left_top_index][8] ^ p[3][i][1]);
+        solution &= !(p[0][left_top_index][2] ^ p[1][i][5]);
+      }
+    }
+  }
+}
+
+void limit5(bdd &solution) {
+  for (unsigned i = 0; i < N; i++) {
+    bdd bdd1, bdd2, bdd3, bdd4 = bddfalse;
+
+    for (unsigned j = 0; j < N; j++) {
+      bdd1 |= p[0][i][j];
+      bdd2 |= p[1][i][j];
+      bdd3 |= p[2][i][j];
+      bdd4 |= p[3][i][j];
+    }
+    solution &= bdd1 & bdd2 & bdd3 & bdd4;
+  }
+}
+
+// Ограничение количества разных свойств 8
+void limit6(bdd &solution) {
+  for (unsigned j = 0; j < N; j++) {
+    for (unsigned i = 0; i < N - 1; i++) {
+      for (unsigned k = i + 1; k < N; k++) {
+        for (auto &m: p) {
+          solution &= m[i][j] >> !m[k][j];
+        }
+      }
+    }
+  }
+}
+
+int main() {
+  bdd_init(100000000, 100000);
+  bdd_setvarnum(VAR_NUM);
+
+  bdd my_bdd = bddtrue;
+  fill();
+  limit1(my_bdd);
+  limit2(my_bdd);
+  limit3(my_bdd);
+  limit4(my_bdd);
+  limit5(my_bdd);
+  limit6(my_bdd);
+
+  double satcount = bdd_satcount(my_bdd);
+  std::cout << "Found " << satcount << " solution(s)\n\n";
+  if (satcount != 0) {
+    bdd_allsat(my_bdd, fun);
+  }
+  bdd_done();
+  return 0;
 }
